@@ -1,0 +1,142 @@
+﻿<table class="my-table-class">
+    <thead>
+        <tr>
+            @for (int i = 0; i < @headers.Count; i++)
+            {
+                <th>@headers[i]</th>
+            }
+            <th></th> <!-- columna para los botones de editar y eliminar -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in @rows)
+        {
+            <tr>
+                @foreach (var prop in row.GetType().GetProperties())
+                {
+                    <td>@prop.GetValue(row, null)</td>
+                }
+                <td>
+                    <button class="my-button" onclick="EditRow(@row)">Editar</button>
+                    <button class="my-button" onclick="DeleteRow(@row)">Eliminar</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@code {
+    [Parameter]
+    [Required]
+    public List<string> headers { get; set; }
+
+    [Parameter]
+    [Required]
+    public List<object> rows { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    private void UpdateTable(int numHeaders)
+    {
+        headers.Clear();
+        rows.Clear();
+
+        for (int i = 1; i <= numHeaders; i++)
+        {
+            headers.Add($"Header {i}");
+        }
+
+        List<string> row1 = new List<string>();
+        for (int i = 1; i <= numHeaders; i++)
+        {
+            row1.Add($"Row 1 Col {i}");
+        }
+        rows.Add(row1);
+
+        List<string> row2 = new List<string>();
+        for (int i = 1; i <= numHeaders; i++)
+        {
+            row2.Add($"Row 2 Col {i}");
+        }
+        rows.Add(row2);
+    }
+
+
+
+    private void EditRow(object row)
+    {
+        // aquí puedes obtener los datos de la fila y hacer algo con ellos, como mostrar un formulario de edición
+        Console.WriteLine("Editando fila: " + row.ToString());
+    }
+
+    private void DeleteRow(object row)
+    {
+        // aquí puedes obtener los datos de la fila y hacer algo con ellos, como confirmar la eliminación
+        Console.WriteLine("Eliminando fila: " + row.ToString());
+    }
+}
+
+
+<style>
+    .my-table-class {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+
+        .my-table-class td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            background-color:white;
+            color:black
+        }
+
+        .my-table-class th {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            background-color: black;
+            color: white
+        }
+
+        .my-table-class tr:hover {
+            background-color: #f5f5f5;
+        }
+
+
+        @*botones*@
+         .my-button {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    .my-button:hover {
+        background-color: #3e8e41;
+    }
+    .edit-button {
+        background-color: #008CBA;
+    }
+    .edit-button:hover {
+        background-color: #006d87;
+    }
+    .delete-button {
+        background-color: #f44336;
+    }
+    .delete-button:hover {
+        background-color: #d9290d;
+    }
+</style>

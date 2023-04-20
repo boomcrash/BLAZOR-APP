@@ -7,51 +7,27 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
+@*forecasts == null*@
+@if (0==0)
 {
     <p><em>Loading...</em></p>
+    <TablaComponent headers="@headers"  rows="@rows"/>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+   <p>La tabla no tiene datos !</p>
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
 
-    protected override async Task OnInitializedAsync()
+    List<string> headers = new List<string>() { "Header 1", "Header 2", "Header 3" ,"Header 4","Header 5"};
+    List<object>  rows = new List<object>()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
-    }
+        new { Prop1 = "Value 1", Prop2 = "Value 2", Prop3 = "Value 3" ,Prop4 = "Value x",Prop5 = "Value y" },
+        new { Prop1 = "Value 4", Prop2 = "Value 5", Prop3 = "Value 6" ,Prop4 = "Value x",Prop5 = "Value y" },
+        new { Prop1 = "Value 7", Prop2 = "Value 8", Prop3 = "Value 9" ,Prop4 = "Value x",Prop5 = "Value y" }
+    };
 
-    public class WeatherForecast
-    {
-        public DateTime Date { get; set; }
 
-        public int TemperatureC { get; set; }
-
-        public string? Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
+  
 }

@@ -1,0 +1,122 @@
+﻿@page "/products"
+@inject ILogger<Products> logger
+@inject ProductService productService
+@inject NavigationManager NavigationManager
+
+<ModuleTitle Title="@HelloMessage" />
+
+<button  class="btn btn-dark" @onclick="@(()=> NavigationManager.NavigateTo("/addproduct"))"> AGREGAR PRODUCTO </button>
+
+@if (products?.Count>0)
+{
+    <div class="products-container">
+        @foreach (var product in products)
+        {
+            <div class="card">
+                <img class="card-img-top" src="@product.Images[0]" alt="Product" loading="lazy" width="270" height="210">
+                <div class="card-body">
+                    <h4><b>@product.Title</b></h4>
+                    <p>@product.Price?.ToString("C")</p>
+                </div>
+            </div>
+        }
+    </div>
+
+}
+else
+{
+    <p>CARGANDO PRODUCTOS !</p>
+}
+
+
+
+@code {
+    public string HelloMessage = "BIENVENIDA A LA TIENDA DE MILTON ELIZALDE";
+
+    private List<Product> products;
+
+
+    //OnInitialzie()
+    protected override async Task OnInitializedAsync()
+    {
+        products = await GetProducts();
+    }
+
+
+    private async Task<List<Product>> GetProducts() => await productService.Get();
+
+}
+
+
+<style>
+
+    /* Estilos para la página en general */
+
+    body {
+        background-color: #1c1c1c;
+        color: #fff;
+        font-family: "Roboto", sans-serif;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Estilos para la sección de productos */
+
+    .products-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+        grid-gap: 20px;
+    }
+
+    .card {
+        background-color: #222;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        position: relative;
+        transition: transform 0.3s;
+    }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+    .card-img-top {
+        height: 210px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card h4 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .card p {
+        margin: 0;
+        font-size: 1.2rem;
+        opacity: 0.8;
+    }
+
+    /* Estilos adicionales */
+
+    .btn {
+        background-color: #fff;
+        border: none;
+        border-radius: 30px;
+        color:black;
+        font-weight:bold;
+        padding:5px;
+        margin-bottom:10px;
+    }
+
+
+</style>

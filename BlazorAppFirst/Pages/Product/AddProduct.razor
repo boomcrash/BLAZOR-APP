@@ -1,0 +1,22 @@
+﻿@page "/addproduct"
+@inject IProductService productService
+@inject ICategoryService categoruyService
+@inject NavigationManager NavigationManager
+
+<ModuleTitle  Title="ES HORA DE AGREGAR UN PRODUCTO !"/>
+
+
+<button class="btn btn-dark" @onclick="@(()=> NavigationManager.NavigateTo("/products"))"> VER PRODUCTOS </button>
+
+<EditForm Model="@product">
+    <div class="row">
+        <div class="col-8 form-group">
+            <label  for="title" class="col-form-label">Titulo</label>
+            <InputText id="title" @bind-Value="product.Title" required class="form-control"/>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private Product product = new();
+}
