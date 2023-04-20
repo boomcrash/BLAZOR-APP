@@ -1,0 +1,68 @@
+﻿@page "/counter/{currentCountParameter:int?}"
+@inject ILogger<Counter> logger;
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>0
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+
+//Para poder utilizareste parámetro se debeindicar en la url
+   /* [Parameter]
+    public int? currentCountParameter { get; set; } = 0;
+    */
+//Mientras que para poder usar este parámetro se debesimplemente crear el atributo
+//Y sin necesidad de ponerel parámetro de la url. Este es capaz de recibirloen ejecución
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public int? counterFromQuery { get; set; } = 0;
+
+
+    protected override void OnInitialized()
+    {
+        logger.LogInformation("SE INICIALIZA EL COMPONENTE");
+        currentCount=counterFromQuery!=null?counterFromQuery.Value:0;
+        base.OnInitialized();
+    }
+/*
+    //Cuando recibo parámetroslo primero que debemos ejecutar es setparametersasync
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        logger.LogInformation("SE RECIBEN LOS PARAMETROS");
+        //obtener parametros validando si es nulo
+        if (parameters.GetValueOrDefault<int?>("currentCountParameter") != null)
+        {
+            currentCount = parameters.GetValueOrDefault<int?>("currentCountParameter").Value;
+        }
+
+        await base.SetParametersAsync(parameters);
+    }
+
+*/
+
+    protected override void OnParametersSet()
+    {
+        logger.LogInformation("SE ENVIAN LOS PARAMETROS");
+        base.OnParametersSet();
+    }
+
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        logger.LogInformation("SE RENDERIZA EL COMPONENTE");
+        base.OnAfterRender(firstRender);
+    }
+    
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}
+
+
