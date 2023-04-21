@@ -3,9 +3,9 @@
 @inject ProductService productService
 @inject NavigationManager NavigationManager
 
-<ModuleTitle Title="@HelloMessage" />
+<button class="btn btn-dark" @onclick="@(()=> NavigationManager.NavigateTo("/addproduct"))"> AGREGAR PRODUCTO </button>
 
-<button  class="btn btn-dark" @onclick="@(()=> NavigationManager.NavigateTo("/addproduct"))"> AGREGAR PRODUCTO </button>
+<ModuleTitle Title="@HelloMessage" />
 
 @if (products?.Count>0)
 {
@@ -21,7 +21,6 @@
             </div>
         }
     </div>
-
 }
 else
 {

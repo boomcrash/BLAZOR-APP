@@ -3,16 +3,19 @@
 @inject ICategoryService categoruyService
 @inject NavigationManager NavigationManager
 
-<ModuleTitle  Title="ES HORA DE AGREGAR UN PRODUCTO !"/>
-
 
 <button class="btn btn-dark" @onclick="@(()=> NavigationManager.NavigateTo("/products"))"> VER PRODUCTOS </button>
+
+<ModuleTitle  Title="ES HORA DE AGREGAR UN PRODUCTO !"/>
 
 <EditForm Model="@product">
     <div class="row">
         <div class="col-8 form-group">
-            <label  for="title" class="col-form-label">Titulo</label>
+            <label  for="title" class="col-form-label">Title</label>
             <InputText id="title" @bind-Value="product.Title" required class="form-control"/>
+
+            <label for="Price" class="col-form-label">Price</label>
+            <InputNumber id="Price" @bind-Value="product.Price" required class="form-control" />
         </div>
     </div>
 </EditForm>

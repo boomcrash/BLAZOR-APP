@@ -1,142 +1,179 @@
 ﻿<table class="my-table-class">
     <thead>
         <tr>
+            <th></th> <!-- columna para los botones de editar y eliminar -->
+
             @for (int i = 0; i < @headers.Count; i++)
             {
                 <th>@headers[i]</th>
+                @*@nombresDeTipos[i]*@
             }
-            <th></th> <!-- columna para los botones de editar y eliminar -->
         </tr>
     </thead>
     <tbody>
-        @foreach (var row in @rows)
+        @foreach (var row in @registros)
         {
             <tr>
-                @foreach (var prop in row.GetType().GetProperties())
-                {
-                    <td>@prop.GetValue(row, null)</td>
-                }
                 <td>
-                    <button class="my-button" onclick="EditRow(@row)">Editar</button>
-                    <button class="my-button" onclick="DeleteRow(@row)">Eliminar</button>
+                    @if(@estado=="normal"){
+                        <button class="my-button" @onclick="() => EditRow(row)"><i class="material-icons">edit</i></button>
+                        <button class="my-button" @onclick="() => DeleteRow(row)"><i class="material-icons">delete</i></button>
+                    }
+                    else if (@estado == "editar")
+                    {
+                        <button class="my-button" @onclick="() => SaveEdit(row)"><i class="material-icons">done</i></button>
+                        <button class="my-button" @onclick="() => CancelEdit()"><i class="material-icons">close</i></button>
+                    }
+                    else if (@estado == "eliminar")
+                    {
+                        <button class="my-button" @onclick="() => SaveDelete(row)"><i class="material-icons">done</i></button>
+                        <button class="my-button" @onclick="() => CancelDelete()"><i class="material-icons">close</i></button>
+                    }
+                    
                 </td>
+                @for (int i = 0; i < @headers.Count; i++)
+                {
+
+                    <ColumnaParametrizada estado="@estado" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
+                    
+                }
             </tr>
         }
+
+
+        
     </tbody>
 </table>
 
 
 
 @code {
+    private int FilaPosicion=0;
+
     [Parameter]
     [Required]
     public List<string> headers { get; set; }
 
     [Parameter]
     [Required]
-    public List<object> rows { get; set; }
+    public List<object> registros { get; set; }
+
+    [Parameter]
+    [Required]
+    public string[] tipoColumnas { get; set; }
+
+    public List<string?> nombresDeTipos =new List<string>();
+
+    private string estado = "normal";
 
     protected override void OnInitialized()
     {
-
     }
 
-    private void UpdateTable(int numHeaders)
+    protected override void OnParametersSet()
     {
-        headers.Clear();
-        rows.Clear();
-
-        for (int i = 1; i <= numHeaders; i++)
+        Type[] tiposDeDatos=null;
+        for (int i = 0; i < registros.Count; i++)
         {
-            headers.Add($"Header {i}");
+            var fila = registros[i];
+            tiposDeDatos = new Type[fila.GetType().GetProperties().Length];
+            for (int j = 0; j < tiposDeDatos.Length; j++)
+            {
+                var propiedad = fila.GetType().GetProperties()[j];
+                var tipo = propiedad.PropertyType;
+                var tipoSubyacente = Nullable.GetUnderlyingType(tipo);
+                if (tipoSubyacente != null && (tipoSubyacente.IsPrimitive || tipoSubyacente == typeof(decimal)))
+                {
+                    tiposDeDatos[j] = tipoSubyacente;
+                }
+                else 
+                {
+                    tiposDeDatos[j] = tipo;
+                }
+            }
         }
-
-        List<string> row1 = new List<string>();
-        for (int i = 1; i <= numHeaders; i++)
-        {
-            row1.Add($"Row 1 Col {i}");
-        }
-        rows.Add(row1);
-
-        List<string> row2 = new List<string>();
-        for (int i = 1; i <= numHeaders; i++)
-        {
-            row2.Add($"Row 2 Col {i}");
-        }
-        rows.Add(row2);
+        nombresDeTipos = tiposDeDatos.Select(t => t.FullName).ToList();
     }
 
+    private void SaveEdit(object row)
+    {
+
+        headers.Clear();
+        registros.Clear();
+    }
 
 
     private void EditRow(object row)
     {
         // aquí puedes obtener los datos de la fila y hacer algo con ellos, como mostrar un formulario de edición
         Console.WriteLine("Editando fila: " + row.ToString());
+        estado = "editar";
+    }
+
+    private void CancelEdit()
+    {
+        estado = "normal";
     }
 
     private void DeleteRow(object row)
     {
         // aquí puedes obtener los datos de la fila y hacer algo con ellos, como confirmar la eliminación
         Console.WriteLine("Eliminando fila: " + row.ToString());
+        estado = "eliminar";
+    }
+
+
+    private void SaveDelete(object row)
+    {
+        estado = "normal";
+        headers.Clear();
+        registros.Clear();
+    }
+
+    private void CancelDelete()
+    {
+        estado = "normal";
     }
 }
 
 
 <style>
+    /* Estilos para la tabla */
     .my-table-class {
         border-collapse: collapse;
+        font-size: 16px;
+        line-height: 1.5;
         width: 100%;
     }
 
-
-        .my-table-class td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-            background-color:white;
-            color:black
+        /* Estilos para la fila */
+        .my-table-class tr {
+            border-bottom: 1px solid #ddd;
         }
 
-        .my-table-class th {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-            background-color: black;
-            color: white
+        /* Estilos para la celda de botones */
+        .my-table-class td:first-child {
+            padding: 10px;
+            text-align: center;
         }
 
-        .my-table-class tr:hover {
-            background-color: #f5f5f5;
-        }
+            /* Estilos para los botones */
+            .my-table-class td:first-child button {
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                font-size: 24px;
+                outline: none;
+            }
 
+                /* Estilos para el icono de editar */
+                .my-table-class td:first-child button.edit i {
+                    color: #2196f3;
+                }
 
-        @*botones*@
-         .my-button {
-        background-color: #4CAF50;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border-radius: 5px;
-    }
-    .my-button:hover {
-        background-color: #3e8e41;
-    }
-    .edit-button {
-        background-color: #008CBA;
-    }
-    .edit-button:hover {
-        background-color: #006d87;
-    }
-    .delete-button {
-        background-color: #f44336;
-    }
-    .delete-button:hover {
-        background-color: #d9290d;
-    }
+                /* Estilos para el icono de eliminar */
+                .my-table-class td:first-child button.delete i {
+                    color: #f44336;
+                }
+
 </style>

@@ -1,0 +1,71 @@
+﻿@using System.Globalization;
+
+    <td>
+    @if (@estado == "normal"||@estado == "eliminar")
+        {
+        @if (@tipoDatos[posicion].ToString() == "System.Decimal")
+        {
+            @prop.GetValue(@row, null).ToString().Replace(',', '.');
+        } 
+         else
+        {
+            @prop.GetValue(@row, null)
+            ;
+        }
+    }else if (@estado == "editar")
+    {
+
+        if (posicion != 0)
+        {
+            if (@tipoDatos[posicion].ToString() == "System.Int32")
+            {
+                <input type="number" value="@prop.GetValue(@row, null)" @oninput="(e) => prop.SetValue(row, null)" />
+            }
+            else if (@tipoDatos[posicion].ToString() == "System.Decimal")
+            {
+                var valor = @prop.GetValue(@row, null).ToString().Replace(',', '.');
+                <input type="number" value="@valor.ToString().Replace(',', '.')" @oninput="(e) => prop.SetValue(row, null)" lang="en-US" step="any" onkeydown="return /[0-9\.]|Backspace|Delete/.test(event.key)" />
+            }
+
+            else if (@tipoDatos[posicion].ToString() == "System.String")
+            {
+
+                <input type="text" value="@prop.GetValue(@row, null)" @oninput="(e) => prop.SetValue(row, null)" />
+            }
+            else
+            {
+            }
+        }
+        else
+        {
+            @prop.GetValue(@row, null)
+        }
+
+    }
+</td>
+
+
+@code {
+    [Parameter]
+    [Required]
+    public string estado { get; set; }
+    
+    [Parameter]
+    [Required]
+    public object row { get; set; }
+    
+    [Parameter]
+    [Required]
+    public int posicion { get; set; }
+    
+    [Parameter]
+    [Required]
+    public List<string> tipoDatos { get; set; }
+
+    public System.Reflection.PropertyInfo prop;
+
+    protected override void OnParametersSet()
+    {
+        prop = @row.GetType().GetProperties()[posicion];
+    }
+}
