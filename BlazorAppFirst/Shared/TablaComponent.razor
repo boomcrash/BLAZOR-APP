@@ -11,33 +11,78 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var row in @registros)
+        @foreach (var item in @valoresActuales)
         {
-            <tr>
-                <td>
-                    @if(@estado=="normal"){
-                        <button class="my-button" @onclick="() => EditRow(row)"><i class="material-icons">edit</i></button>
-                        <button class="my-button" @onclick="() => DeleteRow(row)"><i class="material-icons">delete</i></button>
-                    }
-                    else if (@estado == "editar")
-                    {
-                        <button class="my-button" @onclick="() => SaveEdit(row)"><i class="material-icons">done</i></button>
-                        <button class="my-button" @onclick="() => CancelEdit()"><i class="material-icons">close</i></button>
-                    }
-                    else if (@estado == "eliminar")
-                    {
-                        <button class="my-button" @onclick="() => SaveDelete(row)"><i class="material-icons">done</i></button>
-                        <button class="my-button" @onclick="() => CancelDelete()"><i class="material-icons">close</i></button>
-                    }
-                    
-                </td>
-                @for (int i = 0; i < @headers.Count; i++)
-                {
+            
+            <span>@item</span>
+        }
+        @foreach (var row in @datos)
+        {
+            if (row == null )
+            {
+                continue; // saltar al siguiente elemento en el bucle si row es nulo
+            }
+            else
+            {
+                int index = @datos.IndexOf(row);
+                
 
-                    <ColumnaParametrizada estado="@estado" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
+                <tr>
+                    <td>
+                        
+                        @if (@index == @filaEditando)
+                        {
+                            <button class="my-button" @onclick="() => SaveEdit(row)"><i class="material-icons">done</i></button>
+                            <button class="my-button" @onclick="() => CancelEdit()"><i class="material-icons">close</i></button>
+                        }
+                        else if (@index == @filaEliminando)
+                        {
+                            <button class="my-button" @onclick="() => SaveDelete(row)"><i class="material-icons">done</i></button>
+                            <button class="my-button" @onclick="() => CancelDelete()"><i class="material-icons">close</i></button>
+                        }
+                        else{
+                     
+                            <button class="my-button" @onclick="() => EditRow(row,index)"><i class="material-icons">edit</i></button>
+                            <button class="my-button" @onclick="() => DeleteRow(row,index)"><i class="material-icons">delete</i></button>
+                        
+                        }
+
+                    </td>
+                    @if(@index == @filaEditando){
+
+                        @for (int i = 0; i < row.GetType().GetProperties().Length; i++)
+                        {
+                            @*
+                            var prop = row.GetType().GetProperties();
+                            @prop.GetValue(i)
+                            if (@row.GetType().GetProperties()[i].GetValue(@row, null) != null)
+                            {
+                            <ColumnaParametrizada estado="@estado" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
+                            }*@
+                            <ColumnaParametrizada color="#A5FF8B" estado="editar" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
+
+                        }
+                    }
+                    else if (@index == filaEliminando)
+                    {
+
+                        @for (int i = 0; i < row.GetType().GetProperties().Length; i++)
+                        {
+                            <ColumnaParametrizada color="#FFBFB1" estado="normal" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
+
+                        }
+                    }
+                    else
+                    {
+                        @for (int i = 0; i < row.GetType().GetProperties().Length; i++)
+                        {
+                            <ColumnaParametrizada  estado="normal" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
+                        }
+                    }
                     
-                }
-            </tr>
+                </tr>
+            }
+            
         }
 
 
@@ -56,15 +101,18 @@
 
     [Parameter]
     [Required]
-    public List<object> registros { get; set; }
+    public List<object> datos { get; set; }
 
     [Parameter]
     [Required]
-    public string[] tipoColumnas { get; set; }
+    public string[] columnValidation { get; set; }
 
     public List<string?> nombresDeTipos =new List<string>();
 
-    private string estado = "normal";
+    public int filaEditando=-1;
+    public int filaEliminando=-1;
+
+    List<string> valoresActuales = new List<string>();
 
     protected override void OnInitialized()
     {
@@ -72,10 +120,10 @@
 
     protected override void OnParametersSet()
     {
-        Type[] tiposDeDatos=null;
-        for (int i = 0; i < registros.Count; i++)
+        Type[] tiposDeDatos=null; 
+        for (int i = 0; i < datos.Count; i++)
         {
-            var fila = registros[i];
+            var fila = datos[i];
             tiposDeDatos = new Type[fila.GetType().GetProperties().Length];
             for (int j = 0; j < tiposDeDatos.Length; j++)
             {
@@ -98,41 +146,59 @@
     private void SaveEdit(object row)
     {
 
-        headers.Clear();
-        registros.Clear();
+        //headers.Clear();
+        //datos.Clear();
+    
+        valoresActuales.Clear();
+        var props = row.GetType().GetProperties();
+        for (int i = 0; i < props.Length; i++)
+        {
+            valoresActuales.Add(props[i].GetValue(row).ToString());
+        }
     }
 
 
-    private void EditRow(object row)
+    private void EditRow(object row, int index)
     {
         // aquí puedes obtener los datos de la fila y hacer algo con ellos, como mostrar un formulario de edición
         Console.WriteLine("Editando fila: " + row.ToString());
-        estado = "editar";
+
+        filaEditando = index;
     }
 
     private void CancelEdit()
     {
-        estado = "normal";
+        filaEditando = -1;
     }
 
-    private void DeleteRow(object row)
+    private void DeleteRow(object row, int index)
     {
         // aquí puedes obtener los datos de la fila y hacer algo con ellos, como confirmar la eliminación
         Console.WriteLine("Eliminando fila: " + row.ToString());
-        estado = "eliminar";
+        filaEliminando = index;
+
     }
+
+
 
 
     private void SaveDelete(object row)
     {
-        estado = "normal";
-        headers.Clear();
-        registros.Clear();
+       // headers.Clear();
+       // datos.Clear();
+        valoresActuales.Clear();
+        var props = row.GetType().GetProperties();
+        for (int i = 0; i < props.Length; i++)
+        {
+            valoresActuales.Add(props[i].GetValue(row).ToString());
+        }
+       
+        // resto del código para eliminar la fila
     }
 
     private void CancelDelete()
     {
-        estado = "normal";
+        filaEliminando = -1;
     }
 }
 

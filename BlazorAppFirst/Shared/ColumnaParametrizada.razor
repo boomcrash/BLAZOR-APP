@@ -1,6 +1,6 @@
 ﻿@using System.Globalization;
 
-    <td>
+<td style="background-color:@color;">
     @if (@estado == "normal"||@estado == "eliminar")
         {
         @if (@tipoDatos[posicion].ToString() == "System.Decimal")
@@ -19,18 +19,18 @@
         {
             if (@tipoDatos[posicion].ToString() == "System.Int32")
             {
-                <input type="number" value="@prop.GetValue(@row, null)" @oninput="(e) => prop.SetValue(row, null)" />
+                <input style=" width: 70px;" type="number" value="@prop.GetValue(@row, null)"  />
             }
             else if (@tipoDatos[posicion].ToString() == "System.Decimal")
             {
                 var valor = @prop.GetValue(@row, null).ToString().Replace(',', '.');
-                <input type="number" value="@valor.ToString().Replace(',', '.')" @oninput="(e) => prop.SetValue(row, null)" lang="en-US" step="any" onkeydown="return /[0-9\.]|Backspace|Delete/.test(event.key)" />
+                <input style="; width: 70px;" type="number" value="@valor.ToString().Replace(',', '.')"  lang="en-US" step="any" onkeydown="return /[0-9\,]|Backspace|Delete/.test(event.key)" />
             }
 
             else if (@tipoDatos[posicion].ToString() == "System.String")
             {
 
-                <input type="text" value="@prop.GetValue(@row, null)" @oninput="(e) => prop.SetValue(row, null)" />
+                <input size="24" type="text" value="@prop.GetValue(@row, null)"  />
             }
             else
             {
@@ -49,18 +49,21 @@
     [Parameter]
     [Required]
     public string estado { get; set; }
-    
+
     [Parameter]
     [Required]
     public object row { get; set; }
-    
+
     [Parameter]
     [Required]
     public int posicion { get; set; }
-    
+
     [Parameter]
     [Required]
     public List<string> tipoDatos { get; set; }
+
+    [Parameter]
+    public string color { get; set; } = "white";
 
     public System.Reflection.PropertyInfo prop;
 
@@ -68,4 +71,6 @@
     {
         prop = @row.GetType().GetProperties()[posicion];
     }
+
+
 }

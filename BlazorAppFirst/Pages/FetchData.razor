@@ -14,7 +14,7 @@
 @*forecasts == null*@
 @if (@headers != null || @registros != null)
 {
-    <TablaComponent headers="@headers" registros="@registros" />
+    <TablaComponent headers="@headers" datos="@registros" columnValidation="@valdacionesRegex" />
 }
 else
 {
@@ -23,26 +23,34 @@ else
 }
 
 @code {
+    string[] tiposColumnna = new string[] { "INT", "STRING", "DECIMAL", "STRING", "INT", "STRING", "STRING" };
+    string[] valdacionesRegex = new string[] {
+        "^[0-9]+$",
+        @"^[A-Za-z0-9\s.,!?:;\-\(\)]+$",
+        @"/[0-9\.]", @"^[a-zA-Z0-9,.!?;:()@#$%&*\-\s]+$", 
+        "^[0-9]+$", 
+        @"^(https?://)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(\/[^\/]*)*\/([^\/]+\.(jpg|png|gif))$" };
 
-    List<string> headers = new List<string>() { "Header 1", "Header 2", "Header 3" ,"Header 4","Header 5"};
+    List<string> headers = new List<string>() { "Id", "Title", "Price", "Description", "CategoryId", "Image" };
     public List<object> registros=new List<object>();
 
 
     protected override void OnInitialized()
     {
-        Models.Product producto = new Models.Product
-            {
-                Id = 3,
-                Title = "Producto 3",
-                Price = Convert.ToDecimal("12,2"),
-                Description = "Este es el producto 3",
-                CategoryId = 2,
-                Images = new string[] { "image1.jpg", "image2.jpg" },
-                Image = "image1.jpg"
-            };
+        for (int i = 1; i <= 30; i++)
+        {
+            Models.Product2 producto = new Models.Product2
+                {
+                    Id = i,
+                    Title = "Producto " + i,
+                    Price = Convert.ToDecimal("12,2"),
+                    Description = "Este es el producto " + i,
+                    CategoryId = i,
+                    Image = "image" + i + ".jpg"
+                };
 
-        // Agregar el objeto a la lista de registros
-        registros.Add(producto);
+            registros.Add(producto);
+        }
     }
 
     
