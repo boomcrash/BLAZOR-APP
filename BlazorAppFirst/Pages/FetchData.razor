@@ -11,10 +11,13 @@
 
 <p>Este es un componente para crear tablas dinamicas .</p>
 
+
+
 @*forecasts == null*@
 @if (@headers != null || @registros != null)
-{
-    <TablaComponent headers="@headers" datos="@registros" columnValidation="@valdacionesRegex" />
+{   <div style="width:100%; margin-bottom:20px;">
+        <TablaComponent headers="@headers" datos="@registros" columnValidation="@valdacionesRegex" colorDelete="#FFBFB1" colorEdit="#A5FF8B" colorInput="" colorText="" />
+    </div>
 }
 else
 {
@@ -23,6 +26,7 @@ else
 }
 
 @code {
+
     string[] tiposColumnna = new string[] { "INT", "STRING", "DECIMAL", "STRING", "INT", "STRING", "STRING" };
     string[] valdacionesRegex = new string[] {
         "^[0-9]+$",

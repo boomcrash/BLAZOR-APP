@@ -1,22 +1,42 @@
-﻿<table class="my-table-class">
-    <thead>
-        <tr>
-            <th></th> <!-- columna para los botones de editar y eliminar -->
+﻿<div class="md-form mt-0">
+    <input style="margin-bottom:20px; width:20%; float:right; text-align:left" class="form-control" @bind-value="@searchTerm" @oninput="HandleSearch" type="text" placeholder="Buscar" aria-label="Buscar" />
+</div>
 
-            @for (int i = 0; i < @headers.Count; i++)
+
+
+<table style="@tableStyle" class="my-table-class">
+    <thead style="@headerStyle">
+        @*
+        @if (@ver)
+        {
+            foreach (var item in editedObject.GetType().GetProperties())
             {
-                <th>@headers[i]</th>
+
+                <span>@item.GetValue(@editedObject, null).ToString()</span>
+            }
+        }
+        *@
+        <tr>
+            @for (int i = -1; i < @headers.Count; i++)
+            {
+                if (i == -1)
+                {
+
+                    <th>ACCIONES</th>
+                }
+                else
+                {
+
+                    <th>@headers[i]</th>
+                }
                 @*@nombresDeTipos[i]*@
             }
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in @valoresActuales)
-        {
-            
-            <span>@item</span>
-        }
-        @foreach (var row in @datos)
+
+        @{var dataset=busqueda?@filteredData:@datos;}
+        @foreach (var row in @dataset)
         {
             if (row == null )
             {
@@ -24,34 +44,45 @@
             }
             else
             {
-                int index = @datos.IndexOf(row);
-                
 
-                <tr>
-                    <td>
+                int index = @datos.IndexOf(row);
+                if (@editedObject != null && index==@FilaPosicion)
+                {
+                    fila = editedObject;
+                }
+                else
+                {
+                    fila = row;
+                    FilaPosicion = index;
+                }
+                var fondoFila = @index == @filaEditando ? @colorEdit.ToString() : "";
+                fondoFila = @index == filaEliminando ? colorDelete.ToString() : fondoFila;
+                <tr style="background-color:@fondoFila">
+                    <td style="@tdStyle">
                         
                         @if (@index == @filaEditando)
                         {
-                            <button class="my-button" @onclick="() => SaveEdit(row)"><i class="material-icons">done</i></button>
+                            <button class="my-button" @onclick="() => SaveEdit(index)"><i class="material-icons">done</i></button>
                             <button class="my-button" @onclick="() => CancelEdit()"><i class="material-icons">close</i></button>
                         }
                         else if (@index == @filaEliminando)
                         {
-                            <button class="my-button" @onclick="() => SaveDelete(row)"><i class="material-icons">done</i></button>
+                            <button class="my-button" @onclick="() => SaveDelete(index)"><i class="material-icons">done</i></button>
                             <button class="my-button" @onclick="() => CancelDelete()"><i class="material-icons">close</i></button>
                         }
                         else{
-                     
-                            <button class="my-button" @onclick="() => EditRow(row,index)"><i class="material-icons">edit</i></button>
-                            <button class="my-button" @onclick="() => DeleteRow(row,index)"><i class="material-icons">delete</i></button>
+
+                            <button class="my-button" @onclick="() => EditRow(fila,index)"><i class="material-icons">edit</i></button>
+                            <button class="my-button" @onclick="() => DeleteRow(fila,index)"><i class="material-icons">delete</i></button>
                         
                         }
 
                     </td>
-                    @if(@index == @filaEditando){
+                   
 
                         @for (int i = 0; i < row.GetType().GetProperties().Length; i++)
                         {
+                        
                             @*
                             var prop = row.GetType().GetProperties();
                             @prop.GetValue(i)
@@ -59,26 +90,25 @@
                             {
                             <ColumnaParametrizada estado="@estado" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
                             }*@
-                            <ColumnaParametrizada color="#A5FF8B" estado="editar" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
+                        //string valor = @row.GetType().GetProperties()[i].GetValue(@row, null).ToString();
+                        //<span>@nombresDeTipos[i]</span>
 
-                        }
-                    }
-                    else if (@index == filaEliminando)
-                    {
-
-                        @for (int i = 0; i < row.GetType().GetProperties().Length; i++)
-                        {
-                            <ColumnaParametrizada color="#FFBFB1" estado="normal" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
-
-                        }
-                    }
-                    else
-                    {
-                        @for (int i = 0; i < row.GetType().GetProperties().Length; i++)
-                        {
-                            <ColumnaParametrizada  estado="normal" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
-                        }
-                    }
+                            if (@index == @filaEditando)
+                                {
+                            <ColumnaParametrizada tdStyle="@tdStyle" colorText="@colorText" colorInput="@colorInput" estado="editar" fila="@fila" posicion="i" tipoDatos="@nombresDeTipos" OnInputChange="HandlefilaChanged" />
+                                }
+                                else if (@index == filaEliminando)
+                                {
+                            <ColumnaParametrizada tdStyle="@tdStyle" colorText="@colorText" colorInput="@colorInput" estado="normal" fila="@fila" posicion="i" tipoDatos="@nombresDeTipos" OnInputChange="HandlefilaChanged" />
+                                }
+                                else
+                                {
+                            <ColumnaParametrizada tdStyle="@tdStyle" colorText="@colorText" colorInput="@colorInput" estado="normal" fila="@fila" posicion="i" tipoDatos="@nombresDeTipos" OnInputChange="HandlefilaChanged" />
+                                }
+                            }
+                    
+                    
+                    
                     
                 </tr>
             }
@@ -93,7 +123,6 @@
 
 
 @code {
-    private int FilaPosicion=0;
 
     [Parameter]
     [Required]
@@ -107,15 +136,38 @@
     [Required]
     public string[] columnValidation { get; set; }
 
-    public List<string?> nombresDeTipos =new List<string>();
+    public int FilaPosicion = -1;
+    public object fila { get; set; }
+    public object editedObject { get; set; } = null;
 
     public int filaEditando=-1;
     public int filaEliminando=-1;
 
-    List<string> valoresActuales = new List<string>();
+    public List<string?> nombresDeTipos = new List<string>();
 
+    [Parameter]
+    public string colorDelete  { get; set; } = "#FFBFB1";
+    [Parameter]
+    public string colorEdit   { get; set; } = "#A5FF8B";
+    [Parameter]
+    public string colorInput { get; set; } = "black";
+    [Parameter]
+    public string colorText { get; set; } = "black";
+    [Parameter]
+    public string headerStyle { get; set; } = "";
+    [Parameter]
+    public string tableStyle { get; set; } = "";
+    [Parameter]
+    public string tdStyle { get; set; } = "";
+
+    private List<object> filteredData;
+    public string searchTerm { get; set; }
+    public bool busqueda=false;
+
+    public bool ver=false;
     protected override void OnInitialized()
     {
+
     }
 
     protected override void OnParametersSet()
@@ -123,11 +175,11 @@
         Type[] tiposDeDatos=null; 
         for (int i = 0; i < datos.Count; i++)
         {
-            var fila = datos[i];
-            tiposDeDatos = new Type[fila.GetType().GetProperties().Length];
+            var filaDatos = datos[i];
+            tiposDeDatos = new Type[filaDatos.GetType().GetProperties().Length];
             for (int j = 0; j < tiposDeDatos.Length; j++)
             {
-                var propiedad = fila.GetType().GetProperties()[j];
+                var propiedad = filaDatos.GetType().GetProperties()[j];
                 var tipo = propiedad.PropertyType;
                 var tipoSubyacente = Nullable.GetUnderlyingType(tipo);
                 if (tipoSubyacente != null && (tipoSubyacente.IsPrimitive || tipoSubyacente == typeof(decimal)))
@@ -143,18 +195,24 @@
         nombresDeTipos = tiposDeDatos.Select(t => t.FullName).ToList();
     }
 
-    private void SaveEdit(object row)
+    private void SaveEdit(int index)
     {
 
         //headers.Clear();
         //datos.Clear();
-    
-        valoresActuales.Clear();
-        var props = row.GetType().GetProperties();
-        for (int i = 0; i < props.Length; i++)
+
+        // valoresActuales.Clear();
+        if (editedObject != null)
         {
-            valoresActuales.Add(props[i].GetValue(row).ToString());
+            datos[index] = editedObject;
+            filaEditando = -1;
+            editedObject = null;
         }
+        else
+        {
+            filaEditando = -1;
+        }
+
     }
 
 
@@ -164,6 +222,8 @@
         Console.WriteLine("Editando fila: " + row.ToString());
 
         filaEditando = index;
+
+
     }
 
     private void CancelEdit()
@@ -182,17 +242,12 @@
 
 
 
-    private void SaveDelete(object row)
+    private void SaveDelete(int index)
     {
-       // headers.Clear();
-       // datos.Clear();
-        valoresActuales.Clear();
-        var props = row.GetType().GetProperties();
-        for (int i = 0; i < props.Length; i++)
-        {
-            valoresActuales.Add(props[i].GetValue(row).ToString());
-        }
-       
+        // headers.Clear();
+        // datos.Clear();
+        datos.RemoveAt(index);
+        filaEliminando = -1;
         // resto del código para eliminar la fila
     }
 
@@ -200,6 +255,50 @@
     {
         filaEliminando = -1;
     }
+
+
+    //evento para detectar cambios en el input
+    private void HandlefilaChanged(object nuevaFila)
+    {
+        editedObject = nuevaFila;
+        var props = editedObject.GetType().GetProperties();
+        for (int i = 0; i < props.Length; i++)
+        {
+            Console.WriteLine(props[i].GetValue(editedObject).ToString());
+
+            //valoresActuales.Add(props[i].GetValue(editedObject).ToString());
+        }
+        // aqui puedes hacer algo con el valor
+    }
+
+
+
+    //busqueda:
+    private void HandleSearch(ChangeEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(e.Value.ToString()))
+        {
+            filteredData = datos.Where(x => x.GetType().GetProperties()
+                .Any(p => p.GetValue(x)?.ToString().ToLower().Contains(e.Value.ToString().ToLower()) == true)).ToList();
+            if (filteredData.Count > 0)
+            {
+                busqueda = true;
+            }
+            else
+            {
+                busqueda = false;
+            }
+            Console.WriteLine(filteredData);
+        }
+        else
+        {
+            Console.WriteLine("todos los valores coinciden");
+            busqueda = false;
+            filteredData = datos;
+        }
+    }
+
+
 }
 
 
@@ -207,39 +306,64 @@
     /* Estilos para la tabla */
     .my-table-class {
         border-collapse: collapse;
-        font-size: 16px;
-        line-height: 1.5;
         width: 100%;
+        font-size: 14px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+        text-align: left;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.24);
+        transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
     }
 
-        /* Estilos para la fila */
-        .my-table-class tr {
-            border-bottom: 1px solid #ddd;
-        }
+    /* Estilos para las celdas de encabezado */
+    .my-table-class th {
+        background-color: #2196f3;
+        color: white;
+        font-weight: 600;
+        padding: 12px 15px;
+        text-transform: uppercase;
+    }
 
-        /* Estilos para la celda de botones */
-        .my-table-class td:first-child {
-            padding: 10px;
-            text-align: center;
-        }
+    /* Estilos para las celdas de datos */
+    .my-table-class td {
+        padding: 10px 15px;
+        vertical-align: middle;
+        
+    }
 
-            /* Estilos para los botones */
-            .my-table-class td:first-child button {
-                background-color: transparent;
-                border: none;
-                cursor: pointer;
-                font-size: 24px;
-                outline: none;
-            }
+    /* Estilos para las filas alternas */
+    .my-table-class tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
 
-                /* Estilos para el icono de editar */
-                .my-table-class td:first-child button.edit i {
-                    color: #2196f3;
-                }
+    /* Estilos para los botones de acción */
+    .my-button {
+        display: inline-block;
+        border-radius: 4px;
+        background-color: #2196f3;
+        color: #fff;
+        padding: 6px 12px;
+        text-align: center;
+        font-size: 14px;
+        margin: 2px;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+        transition: background-color 0.3s;
+    }
 
-                /* Estilos para el icono de eliminar */
-                .my-table-class td:first-child button.delete i {
-                    color: #f44336;
-                }
+
+    .my-table-class:hover {
+        box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 40px 0 rgba(0, 0, 0, 0.19);
+        transform: translateY(-10px);
+    }
+
+    .my-button:hover {
+        transform: scale(1.2);
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
 
 </style>

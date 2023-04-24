@@ -1,36 +1,36 @@
 ﻿@using System.Globalization;
 
-<td style="background-color:@color;">
+<td style="@tdStyle">
+    @*@<span>@valorN</span>*@
     @if (@estado == "normal"||@estado == "eliminar")
         {
         @if (@tipoDatos[posicion].ToString() == "System.Decimal")
         {
-            @prop.GetValue(@row, null).ToString().Replace(',', '.');
+            <span style="color:@colorText;">@fila.GetType().GetProperties()[posicion].GetValue(@fila, null) </span>
         } 
          else
         {
-            @prop.GetValue(@row, null)
-            ;
+            <span style="color:@colorText;"> @fila.GetType().GetProperties()[posicion].GetValue(@fila, null) </span>
         }
     }else if (@estado == "editar")
     {
-
-        if (posicion != 0)
+        <div class="input-field">
+        @if (posicion != 0)
         {
+            
             if (@tipoDatos[posicion].ToString() == "System.Int32")
             {
-                <input style=" width: 70px;" type="number" value="@prop.GetValue(@row, null)"  />
+                <input style="color:@colorInput; width: 70px;" type="number" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)" onkeydown="return /[0-9]|Backspace|Delete/.test(event.key)" @oninput="HandleInputChange" />
             }
             else if (@tipoDatos[posicion].ToString() == "System.Decimal")
             {
-                var valor = @prop.GetValue(@row, null).ToString().Replace(',', '.');
-                <input style="; width: 70px;" type="number" value="@valor.ToString().Replace(',', '.')"  lang="en-US" step="any" onkeydown="return /[0-9\,]|Backspace|Delete/.test(event.key)" />
+                <input style="color:@colorInput; width: 70px;" type="number" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null).ToString().Replace(',', '.')" step="any" onkeydown="return /[0-9\,]|Backspace|Delete/.test(event.key)" @oninput="HandleInputChange" />
             }
 
             else if (@tipoDatos[posicion].ToString() == "System.String")
             {
 
-                <input size="24" type="text" value="@prop.GetValue(@row, null)"  />
+                <input style="color:@colorInput;" size="14" type="text" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)" @oninput="HandleInputChange" />
             }
             else
             {
@@ -38,8 +38,9 @@
         }
         else
         {
-            @prop.GetValue(@row, null)
+            <span style="color:@colorText;">@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)</span>
         }
+        </div>
 
     }
 </td>
@@ -52,7 +53,7 @@
 
     [Parameter]
     [Required]
-    public object row { get; set; }
+    public object fila { get; set; }
 
     [Parameter]
     [Required]
@@ -65,12 +66,126 @@
     [Parameter]
     public string color { get; set; } = "white";
 
-    public System.Reflection.PropertyInfo prop;
+    [Parameter]
+    public string colorInput { get; set; } = "black";
 
-    protected override void OnParametersSet()
+    [Parameter]
+    public string colorText { get; set; } = "black";
+    [Parameter]
+    public string tdStyle { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<object> OnInputChange { get; set; }
+
+    private async Task HandleInputChange(ChangeEventArgs e)
     {
-        prop = @row.GetType().GetProperties()[posicion];
+        if (tipoDatos[posicion] == "System.Int32")
+        {
+            if (int.TryParse(e.Value.ToString(), out int valorEntero))
+            {
+                fila.GetType().GetProperties()[posicion].SetValue(fila, valorEntero);
+                await OnInputChange.InvokeAsync(fila);
+            }
+        }
+        else if (tipoDatos[posicion] == "System.Decimal")
+        {
+            if (decimal.TryParse(e.Value.ToString().Replace('.', ','), out decimal valorDecimal))
+            {
+                fila.GetType().GetProperties()[posicion].SetValue(fila, valorDecimal);
+                await OnInputChange.InvokeAsync(fila);
+            }
+        }
+        else if(tipoDatos[posicion] == "System.String")
+        {
+            fila.GetType().GetProperties()[posicion].SetValue(fila, e.Value);
+            await OnInputChange.InvokeAsync(fila);
+        }
+        
     }
 
 
+    //private string valorN;
+    protected override void OnParametersSet()
+    {
+
+    }
+
+    private void CambiarValorDePropiedad(object valor)
+    {
+        
+        //valorN = fila.GetType().GetProperties()[posicion].GetValue(fila, null).ToString();
+    }
 }
+
+
+<style>
+    .input-field {
+        position: relative;
+        margin: 5px 0;
+    }
+
+        .input-field input {
+            font-size: 18px;
+            padding: 10px 10px 10px 5px;
+            display: block;
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #757575;
+        }
+
+            .input-field input:focus {
+                outline: none;
+                border-bottom: 2px solid #00695c;
+            }
+
+            .input-field input[type="number"]::-webkit-inner-spin-button,
+            .input-field input[type="number"]::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+        .input-field label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 18px;
+            color: #999;
+            pointer-events: none;
+            transition: 0.2s ease all;
+        }
+
+        .input-field input[type="number"]:focus ~ label,
+        .input-field input[type="number"]:not(:placeholder-shown) ~ label,
+        .input-field input[type="text"]:focus ~ label,
+        .input-field input[type="text"]:not(:placeholder-shown) ~ label {
+            top: -35px;
+            left: 0;
+            color: #00695c;
+            font-size: 14px;
+        }
+
+        .input-field input[type="number"],
+        .input-field input[type="text"] {
+            font-size: 16px;
+            height: 40px;
+        }
+
+        .input-field .material-icons {
+            color: #757575;
+            font-size: 18px;
+            position: absolute;
+            top: 15px;
+            right: 0;
+            display: none;
+        }
+
+        .input-field input[type="text"]:focus + .material-icons,
+        .input-field input[type="text"]:not(:placeholder-shown) + .material-icons {
+            display: block;
+        }
+
+        .input-field input[type="number"]:focus + .material-icons,
+        .input-field input[type="number"]:not(:placeholder-shown) + .material-icons {
+            display: block;
+        }
+</style>
