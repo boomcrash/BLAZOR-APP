@@ -24,10 +24,9 @@ else
     <p><em>Loading...</em></p>
     <p>La tabla no tiene datos !</p>
 }
-
+ 
 @code {
 
-    string[] tiposColumnna = new string[] { "INT", "STRING", "DECIMAL", "STRING", "INT", "STRING", "STRING" };
     string[] valdacionesRegex = new string[] {
         "^[0-9]+$",
         @"^[A-Za-z0-9\s.,!?:;\-\(\)]+$",
@@ -35,7 +34,7 @@ else
         "^[0-9]+$", 
         @"^(https?://)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(\/[^\/]*)*\/([^\/]+\.(jpg|png|gif))$" };
 
-    List<string> headers = new List<string>() { "Id", "Title", "Price", "Description", "CategoryId", "Image" };
+    List<string> headers = new List<string>() { "Id", "Title", "Description", "CategoryId", "Image", "Marca", "Price" };
     public List<object> registros=new List<object>();
 
 
@@ -45,12 +44,15 @@ else
         {
             Models.Product2 producto = new Models.Product2
                 {
+                    
+                   
                     Id = i,
                     Title = "Producto " + i,
                     Price = Convert.ToDecimal("12,2"),
                     Description = "Este es el producto " + i,
                     CategoryId = i,
-                    Image = "image" + i + ".jpg"
+                    Image = "image" + i + ".jpg",
+                    Marca = "Marca" + i
                 };
 
             registros.Add(producto);

@@ -1,39 +1,39 @@
 ﻿<div class="md-form mt-0">
-    <input style="margin-bottom:20px; width:20%; float:right; text-align:left" class="form-control" @bind-value="@searchTerm" @oninput="HandleSearch" type="text" placeholder="Buscar" aria-label="Buscar" />
+    <button style="margin-bottom:20px; margin-left:10px; margin-bottom10px width:fit-content; float:right; text-align:left" class="my-button" @onclick="() => activarSearch()"><i class="@iconFilter"></i></button>
+    @if (@buscar)
+    {
+        <input style="margin-bottom:20px; width:20%; float:right; text-align:left" class="form-control" @bind-value="@searchTerm" @oninput="HandleSearch" type="text" placeholder="Buscar" aria-label="Buscar" />
+    }
+
 </div>
 
 
+@*tw-text-3xl*@
+<table class="my-table-class tw-border-collapse tw-w-full text-center text-sm font-light">
 
-<table style="@tableStyle" class="my-table-class">
-    <thead style="@headerStyle">
-        @*
+    <thead class="tw-border-b tw-bg-neutral-800 tw-font-medium tw-text-white tw-dark:border-neutral-500 tw-dark:bg-neutral-900">
         @if (@ver)
         {
             foreach (var item in editedObject.GetType().GetProperties())
             {
-
-                <span>@item.GetValue(@editedObject, null).ToString()</span>
+                <span class="tw-px-4 tw-py-2">@item.GetValue(@editedObject, null).ToString()</span>
             }
         }
-        *@
         <tr>
             @for (int i = -1; i < @headers.Count; i++)
             {
-                if (i == -1)
+                @if (i == -1)
                 {
-
-                    <th>ACCIONES</th>
+                    <th class="tw-px-4 tw-py-2">ACCIONES</th>
                 }
                 else
                 {
-
-                    <th>@headers[i]</th>
+                    <th class="tw-px-4 tw-py-2">@headers[i]</th>
                 }
-                @*@nombresDeTipos[i]*@
             }
         </tr>
     </thead>
-    <tbody>
+    <tbody >
 
         @{var dataset=busqueda?@filteredData:@datos;}
         @foreach (var row in @dataset)
@@ -72,7 +72,7 @@
                         }
                         else{
 
-                            <button class="my-button" @onclick="() => EditRow(fila,index)"><i class="material-icons">edit</i></button>
+                            <button class="my-button" @onclick="() => EditRow(fila,index)"><i class="fa-solid fa-pen-to-square"></i></button>
                             <button class="my-button" @onclick="() => DeleteRow(fila,index)"><i class="material-icons">delete</i></button>
                         
                         }
@@ -105,7 +105,7 @@
                                 {
                             <ColumnaParametrizada tdStyle="@tdStyle" colorText="@colorText" colorInput="@colorInput" estado="normal" fila="@fila" posicion="i" tipoDatos="@nombresDeTipos" OnInputChange="HandlefilaChanged" />
                                 }
-                            }
+                        }
                     
                     
                     
@@ -115,10 +115,24 @@
             
         }
 
-
+       
         
     </tbody>
 </table>
+
+@if (filteredData?.Count == 0 && busqueda)
+{
+    <div class="tw-flex items-center tw-justify-center tw-h-screen">
+        <div class="tw-bg-white tw-rounded-lg tw-shadow-lg tw-p-6">
+            <div class="tw-flex tw-items-center tw-justify-center tw-text-red-500 tw-text-4xl tw-mb-4">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h1 class="tw-text-3xl tw-font-bold tw-mb-2">No se encontraron resultados</h1>
+            <p class="tw-text-gray-600">La búsqueda que realizaste no arrojó ningún resultado.</p>
+        </div>
+
+    </div>
+}
 
 
 
@@ -165,6 +179,9 @@
     public bool busqueda=false;
 
     public bool ver=false;
+    public bool buscar = false;
+
+    public string iconFilter = "fa-solid fa-filter-circle-xmark";
     protected override void OnInitialized()
     {
 
@@ -193,6 +210,13 @@
             }
         }
         nombresDeTipos = tiposDeDatos.Select(t => t.FullName).ToList();
+    }
+
+    private void activarSearch()
+    {
+        
+        this.iconFilter = buscar ? "fa-solid fa-filter" : "fa-solid fa-filter-circle-xmark";
+        this.buscar = buscar ? false : true;
     }
 
     private void SaveEdit(int index)
@@ -236,7 +260,6 @@
         // aquí puedes obtener los datos de la fila y hacer algo con ellos, como confirmar la eliminación
         Console.WriteLine("Eliminando fila: " + row.ToString());
         filaEliminando = index;
-
     }
 
 
@@ -280,28 +303,20 @@
         {
             filteredData = datos.Where(x => x.GetType().GetProperties()
                 .Any(p => p.GetValue(x)?.ToString().ToLower().Contains(e.Value.ToString().ToLower()) == true)).ToList();
-            if (filteredData.Count > 0)
-            {
-                busqueda = true;
-            }
-            else
-            {
-                busqueda = false;
-            }
+            busqueda = true;
             Console.WriteLine(filteredData);
         }
         else
         {
             Console.WriteLine("todos los valores coinciden");
             busqueda = false;
-            filteredData = datos;
         }
     }
 
 
 }
 
-
+@*
 <style>
     /* Estilos para la tabla */
     .my-table-class {
@@ -366,4 +381,4 @@
     }
 
 
-</style>
+</style>*@
