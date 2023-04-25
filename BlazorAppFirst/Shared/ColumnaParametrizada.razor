@@ -1,6 +1,6 @@
 ﻿@using System.Globalization;
 
-<td style="@tdStyle">
+<td class="tw-whitespace-nowrap tw-px-6 tw-py-4 tw-text-lg">
     @*@<span>@valorN</span>*@
     @if (@estado == "normal"||@estado == "eliminar")
         {
@@ -20,17 +20,17 @@
             
             if (@tipoDatos[posicion].ToString() == "System.Int32")
             {
-                <input style="color:@colorInput; width: 70px;" type="number" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)" onkeydown="return /[0-9]|Backspace|Delete/.test(event.key)" @oninput="HandleInputChange" />
+                    <input class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent" style="color:@colorInput; width: 70px;" type="number" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)" onkeydown="return /[0-9]|Backspace|Delete/.test(event.key)" @oninput="HandleInputChange" />
             }
             else if (@tipoDatos[posicion].ToString() == "System.Decimal")
             {
-                <input style="color:@colorInput; width: 70px;" type="number" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null).ToString().Replace(',', '.')" step="any" onkeydown="return /[0-9\,]|Backspace|Delete/.test(event.key)" @oninput="HandleInputChange" />
+                    <input class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent" style="color:@colorInput; width: 70px;" type="number" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null).ToString().Replace(',', '.')" step="any" onkeydown="return /[0-9\,]|Backspace|Delete/.test(event.key)" @oninput="HandleInputChange" />
             }
 
             else if (@tipoDatos[posicion].ToString() == "System.String")
             {
 
-                <input style="color:@colorInput;" size="14" type="text" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)" @oninput="HandleInputChange" />
+                    <input class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent" style="color:@colorInput;" size="14" type="text" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)" @oninput="HandleInputChange" />
             }
             else
             {
@@ -117,7 +117,7 @@
     }
 }
 
-
+@*
 <style>
     .input-field {
         position: relative;
@@ -189,3 +189,4 @@
             display: block;
         }
 </style>
+*@

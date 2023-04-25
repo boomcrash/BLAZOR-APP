@@ -1,124 +1,141 @@
-﻿<div class="md-form mt-0">
-    <button style="margin-bottom:20px; margin-left:10px; margin-bottom10px width:fit-content; float:right; text-align:left" class="my-button" @onclick="() => activarSearch()"><i class="@iconFilter"></i></button>
-    @if (@buscar)
-    {
-        <input style="margin-bottom:20px; width:20%; float:right; text-align:left" class="form-control" @bind-value="@searchTerm" @oninput="HandleSearch" type="text" placeholder="Buscar" aria-label="Buscar" />
-    }
+﻿<div class="tw-border-solid tw-border-2 tw-border-gray-400 tw-rounded-t-lg tw-relative tw-w-auto tw-h-auto tw-mx-auto tw-my-8 tw-bg-white tw-shadow-lg tw-rounded-lg tw-overflow-hidden tw-transform hover:tw-translate-y-2 tw-transition tw-duration-300 tw-ease-in-out tw-flex tw-flex-col tw-justify-center">
+  <div class="tw-flex-1 tw-overflow-auto">
+      @*
+        <div class="tw-flex tw-justify-center tw-items-center ">
+            <div class="tw-relative tw-text-center tw-p-10 tw-bg-gradient-to-br tw-from-gray-50 tw-to-gray-300 tw-rounded-lg tw-shadow-2xl tw-transform tw-rotate-0 tw-transform">
+                <h1 class="tw-inline-block tw-flex tw-justify-center tw-items-center tw-text-primary-black tw-font-extrabold tw-text-2xl tw-text-opacity-90 tw-tracking-widest tw-transform tw--rotate-0 tw-transition-transform tw-duration-500 hover:tw-transform hover:tw-translate-y-4 tw-transition tw-duration-300 tw-ease-in-out">@Title</h1>
+            </div>
+        </div>
+        *@
+        
+        <h1 class="tw-border-b-2 tw-py-8 tw-inline-block tw-flex tw-justify-center tw-items-center tw-text-primary-black tw-font-extrabold tw-text-2xl tw-text-opacity-90 tw-tracking-widest tw-transform tw--rotate-0 tw-transition-transform tw-duration-500 hover:tw-transform hover:tw-translate-y-4 tw-transition tw-duration-300 tw-ease-in-out">@Title</h1>
 
-</div>
-
-
-@*tw-text-3xl*@
-<table class="my-table-class tw-border-collapse tw-w-full text-center text-sm font-light">
-
-    <thead class="tw-border-b tw-bg-neutral-800 tw-font-medium tw-text-white tw-dark:border-neutral-500 tw-dark:bg-neutral-900">
-        @if (@ver)
+        <div class="tw-md-form tw-mt-0 ">
+            <button class="tw-mb-5 tw-w-auto tw-float-right tw-text-left tw-text-2xl hover:tw-text-primary-blueText tw-mr-10 tw-mt-6" @onclick="() => activarSearch()">
+                <i class="@iconFilter"></i>
+            </button>
+        @if (@buscar)
         {
-            foreach (var item in editedObject.GetType().GetProperties())
-            {
-                <span class="tw-px-4 tw-py-2">@item.GetValue(@editedObject, null).ToString()</span>
-            }
+                <input class="tw-mt-6 tw-float-right tw-text-left tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-mr-5" @bind-value="@searchTerm" @oninput="HandleSearch" type="text" placeholder="Buscar" aria-label="Buscar" />
         }
-        <tr>
-            @for (int i = -1; i < @headers.Count; i++)
+
+    </div>
+
+
+    @*tw-text-3xl*@
+    <table class="tw-border-collapse tw-w-full tw-table-auto tw-text-center tw-text-sm tw-font-light">
+
+        <thead class="tw-border-b tw-bg-neutral-800 tw-font-medium tw-text-white tw-dark:border-neutral-500 tw-bg-primary-white">
+            @if (@ver)
             {
-                @if (i == -1)
+                foreach (var item in editedObject.GetType().GetProperties())
                 {
-                    <th class="tw-px-4 tw-py-2">ACCIONES</th>
+                    <span class="tw-px-4 tw-py-2">@item.GetValue(@editedObject, null).ToString()</span>
+                }
+            }
+            <tr class="tw-bg-primary-white">
+                @for (int i = -1; i < @headers.Count; i++)
+                {
+                    @if (i == -1)
+                    {
+                <th class="tw-px-4 tw-py-2 tw-text-primary-blueText">ACCIONES</th>
+                    }
+                    else
+                    {
+                        <th class="tw-px-4 tw-py-2 tw-text-primary-blueText">@headers[i].ToUpper()</th>
+                    }
+                }
+            </tr>
+        </thead>
+        <tbody >
+
+            @{var dataset=busqueda?@filteredData:@datos;}
+            @foreach (var row in @dataset)
+            {
+                if (row == null )
+                {
+                    continue; // saltar al siguiente elemento en el bucle si row es nulo
                 }
                 else
                 {
-                    <th class="tw-px-4 tw-py-2">@headers[i]</th>
-                }
-            }
-        </tr>
-    </thead>
-    <tbody >
 
-        @{var dataset=busqueda?@filteredData:@datos;}
-        @foreach (var row in @dataset)
-        {
-            if (row == null )
-            {
-                continue; // saltar al siguiente elemento en el bucle si row es nulo
-            }
-            else
-            {
-
-                int index = @datos.IndexOf(row);
-                if (@editedObject != null && index==@FilaPosicion)
-                {
-                    fila = editedObject;
-                }
-                else
-                {
-                    fila = row;
-                    FilaPosicion = index;
-                }
-                var fondoFila = @index == @filaEditando ? @colorEdit.ToString() : "";
-                fondoFila = @index == filaEliminando ? colorDelete.ToString() : fondoFila;
-                <tr style="background-color:@fondoFila">
-                    <td style="@tdStyle">
+                    int index = @datos.IndexOf(row);
+                    if (@editedObject != null && index==@FilaPosicion)
+                    {
+                        fila = editedObject;
+                    }
+                    else
+                    {
+                        fila = row;
+                        FilaPosicion = index;
+                    }
+                    var fondoFila = @index == @filaEditando ? @colorEdit.ToString() : "";
+                    fondoFila = @index == filaEliminando ? colorDelete.ToString() : fondoFila;
+                    <tr class="tw-bg-primary-white">
+                        <td class="">
                         
-                        @if (@index == @filaEditando)
-                        {
-                            <button class="my-button" @onclick="() => SaveEdit(index)"><i class="material-icons">done</i></button>
-                            <button class="my-button" @onclick="() => CancelEdit()"><i class="material-icons">close</i></button>
-                        }
-                        else if (@index == @filaEliminando)
-                        {
-                            <button class="my-button" @onclick="() => SaveDelete(index)"><i class="material-icons">done</i></button>
-                            <button class="my-button" @onclick="() => CancelDelete()"><i class="material-icons">close</i></button>
-                        }
-                        else{
+                            @if (@index == @filaEditando)
+                            {
+                                <button @onclick="() => SaveEdit(index)" class="tw-text-2xl tw-mr-4 tw-text-primary-green"><i class="fa-solid fa-check"></i></button>
+                                <button @onclick="() => CancelEdit()" class="tw-text-2xl tw-text-red-500"><i class="fa-solid fa-x"></i></button>
+                            }
+                            else if (@index == @filaEliminando)
+                            {
+                                    <button @onclick="() => SaveDelete(index)" class="tw-text-2xl tw-mr-4 tw-text-primary-green "><i class="fa-solid fa-check"></i></button>
+                                <button @onclick="() => CancelDelete()" class="tw-text-2xl tw-text-red-500"><i class="fa-solid fa-x"></i></button>
+                            }
+                            else{
 
-                            <button class="my-button" @onclick="() => EditRow(fila,index)"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button class="my-button" @onclick="() => DeleteRow(fila,index)"><i class="material-icons">delete</i></button>
-                        
-                        }
+                                    <button @onclick="() => EditRow(fila,index)" class="tw-text-2xl tw-mr-4  tw-text-primary-blueText hover:tw-scale-1.7"><i class="fa-solid fa-pencil"></i></button>
+                                    <button @onclick="() => DeleteRow(fila,index)" class="tw-text-2xl tw-text-red-500"><i class="fa-sharp fa-solid fa-trash "></i></button>
 
-                    </td>
+
+                            }
+
+                        </td>
                    
 
-                        @for (int i = 0; i < row.GetType().GetProperties().Length; i++)
-                        {
-                        
-                            @*
-                            var prop = row.GetType().GetProperties();
-                            @prop.GetValue(i)
-                            if (@row.GetType().GetProperties()[i].GetValue(@row, null) != null)
+                            @for (int i = 0; i < row.GetType().GetProperties().Length; i++)
                             {
-                            <ColumnaParametrizada estado="@estado" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
-                            }*@
-                        //string valor = @row.GetType().GetProperties()[i].GetValue(@row, null).ToString();
-                        //<span>@nombresDeTipos[i]</span>
+                        
+                                @*
+                                var prop = row.GetType().GetProperties();
+                                @prop.GetValue(i)
+                                if (@row.GetType().GetProperties()[i].GetValue(@row, null) != null)
+                                {
+                                <ColumnaParametrizada estado="@estado" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
+                                }*@
+                            //string valor = @row.GetType().GetProperties()[i].GetValue(@row, null).ToString();
+                            //<span>@nombresDeTipos[i]</span>
 
-                            if (@index == @filaEditando)
-                                {
-                            <ColumnaParametrizada tdStyle="@tdStyle" colorText="@colorText" colorInput="@colorInput" estado="editar" fila="@fila" posicion="i" tipoDatos="@nombresDeTipos" OnInputChange="HandlefilaChanged" />
-                                }
-                                else if (@index == filaEliminando)
-                                {
-                            <ColumnaParametrizada tdStyle="@tdStyle" colorText="@colorText" colorInput="@colorInput" estado="normal" fila="@fila" posicion="i" tipoDatos="@nombresDeTipos" OnInputChange="HandlefilaChanged" />
-                                }
-                                else
-                                {
-                            <ColumnaParametrizada tdStyle="@tdStyle" colorText="@colorText" colorInput="@colorInput" estado="normal" fila="@fila" posicion="i" tipoDatos="@nombresDeTipos" OnInputChange="HandlefilaChanged" />
-                                }
-                        }
+                                if (@index == @filaEditando)
+                                    {
+                                <ColumnaParametrizada tdStyle="@tdStyle" colorText="@colorText" colorInput="@colorInput" estado="editar" fila="@fila" posicion="i" tipoDatos="@nombresDeTipos" OnInputChange="HandlefilaChanged" />
+                                    }
+                                    else if (@index == filaEliminando)
+                                    {
+                                <ColumnaParametrizada tdStyle="@tdStyle" colorText="@colorText" colorInput="@colorInput" estado="normal" fila="@fila" posicion="i" tipoDatos="@nombresDeTipos" OnInputChange="HandlefilaChanged" />
+                                    }
+                                    else
+                                    {
+                                <ColumnaParametrizada tdStyle="@tdStyle" colorText="@colorText" colorInput="@colorInput" estado="normal" fila="@fila" posicion="i" tipoDatos="@nombresDeTipos" OnInputChange="HandlefilaChanged" />
+                                    }
+                            }
                     
                     
                     
                     
-                </tr>
-            }
+                    </tr>
+                }
             
-        }
+            }
 
        
         
-    </tbody>
-</table>
+        </tbody>
+    </table>
+    </div>
+</div>
 
 @if (filteredData?.Count == 0 && busqueda)
 {
@@ -141,6 +158,10 @@
     [Parameter]
     [Required]
     public List<string> headers { get; set; }
+
+    [Parameter]
+    [Required]
+    public string Title { get; set; }
 
     [Parameter]
     [Required]

@@ -6,17 +6,11 @@
 @using BlazorAppFirst.Models
 @using System.Globalization;
 
-<ModuleTitle Title="TABLA DINAMICA" />
-
-
-<p>Este es un componente para crear tablas dinamicas .</p>
-
-
 
 @*forecasts == null*@
 @if (@headers != null || @registros != null)
 {   <div style="width:100%; margin-bottom:20px;">
-        <TablaComponent headers="@headers" datos="@registros" columnValidation="@valdacionesRegex" colorDelete="#FFBFB1" colorEdit="#A5FF8B" colorInput="" colorText="" />
+        <TablaComponent Title="@titulo" headers="@headers" datos="@registros" columnValidation="@valdacionesRegex" colorDelete="#FFBFB1" colorEdit="#A5FF8B" colorInput="" colorText="" />
     </div>
 }
 else
@@ -37,6 +31,7 @@ else
     List<string> headers = new List<string>() { "Id", "Title", "Description", "CategoryId", "Image", "Marca", "Price" };
     public List<object> registros=new List<object>();
 
+    public string titulo = "TABLA DINAMICA - EJEMPLO";
 
     protected override void OnInitialized()
     {
