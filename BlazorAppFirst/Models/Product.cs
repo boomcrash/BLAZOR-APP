@@ -20,8 +20,9 @@
         public string Description { get; set; }
         public int? CategoryId { get; set; }
         public string? Image { get; set; }
-        public string? Marca { get; set; }
+        public DateTime Fecha { get; set; }
         public bool? Estado { get; set; }
-
+        //public char? Tipo { get; set; }
+        //public Dictionary<string,List<object>> diccionario { get; set; }
     }
 }

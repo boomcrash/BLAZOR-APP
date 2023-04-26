@@ -10,7 +10,7 @@
 @*forecasts == null*@
 @if (@headers != null || @registros != null)
 {   <div style="width:100%; margin-bottom:20px;">
-        <TablaComponent Title="@titulo" datos="@registros" columnValidation="@valdacionesRegex" colorDelete="#FFBFB1" colorEdit="#A5FF8B" colorInput="" colorText="" />
+        <TablaComponent Title="@titulo" datos="@registros"  columnValidation="@valdacionesRegex" colorDelete="#FFBFB1" colorEdit="#A5FF8B" colorInput="" colorText="" />
     </div>
 }
 else
@@ -18,8 +18,13 @@ else
     <p><em>Loading...</em></p>
     <p>La tabla no tiene datos !</p>
 }
+
+
+
  
 @code {
+
+
 
     string[] valdacionesRegex = new string[] {
         "^[0-9]+$",
@@ -41,17 +46,18 @@ else
             bool estado = random.Next(2) == 0;
             Models.Product2 producto = new Models.Product2
                 {
-                    
-                   
+
+
                     Id = i,
                     Title = "Producto " + i,
                     Price = Convert.ToDecimal("12,2"),
                     Description = "Este es el producto " + i,
                     CategoryId = i,
                     Image = "image" + i + ".jpg",
-                    Marca = "Marca"+i,
-                    Estado = estado
-                };
+                    Fecha = new DateTime(2022, 1, i),
+                    Estado = estado,
+                    //Tipo = 'A'
+        };
 
             registros.Add(producto);
         }

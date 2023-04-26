@@ -23,8 +23,10 @@
     {
         <div class="input-field">
         @if (posicion != 0)
-        {
-            if (@tipoDatos[posicion].ToString() == "System.Int32")
+            {
+
+                @tipoDatos[posicion].ToString()
+             if (@tipoDatos[posicion].ToString() == "System.Int32")
             {
                     <input class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent" style="color:@colorInput; width: 70px;" type="number" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)" onkeydown="return /[0-9]|Backspace|Delete/.test(event.key)" @oninput="HandleInputChange" />
             }
@@ -35,7 +37,6 @@
 
             else if (@tipoDatos[posicion].ToString() == "System.String")
             {
-
                     <input class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent" style="color:@colorInput;" size="14" type="text" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)" @oninput="HandleInputChange" />
             }
             else if (@tipoDatos[posicion].ToString() == "System.Boolean")
@@ -43,7 +44,17 @@
                 <label class="toggle-button">
                         <input type="checkbox" checked=@Convert.ToBoolean(@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)) @onchange="HandleInputChange">
                 <span class="slider"></span>
-            </label>
+                    </label>
+            }
+            else if (@tipoDatos[posicion].ToString() == "System.DateTime")
+            {
+                string formateo = (Convert.ToDateTime(@fila.GetType().GetProperties()[posicion].GetValue(@fila, null))).ToString("yyyy-MM-dd");
+                <input type="date" id="fecha" value="@formateo" @onchange="HandleInputChange">
+            }
+            else if (@tipoDatos[posicion].ToString() == "System.Char")
+            {
+                string formateo = (Convert.ToDateTime(@fila.GetType().GetProperties()[posicion].GetValue(@fila, null))).ToString("yyyy-MM-dd");
+                <input type="date" id="fecha" value="@formateo" @onchange="HandleInputChange">
             }
         }
         else
@@ -55,6 +66,7 @@
     }else if (@estado == "add")
     {
         <div class="input-field">
+            
             @if (posicion != 0)
             {
                 
@@ -93,104 +105,111 @@
 
 
 @code {
-    [Parameter]
-    [Required]
-    public string estado { get; set; }
+        [Parameter]
+        [Required]
+        public string estado { get; set; }
 
-    [Parameter]
-    [Required]
-    public object fila { get; set; }
+        [Parameter]
+        [Required]
+        public object fila { get; set; }
 
-    [Parameter]
-    [Required]
-    public int posicion { get; set; }
+        [Parameter]
+        [Required]
+        public int posicion { get; set; }
 
-    [Parameter]
-    [Required]
-    public List<string> tipoDatos { get; set; }
+        [Parameter]
+        [Required]
+        public List<string> tipoDatos { get; set; }
 
-    [Parameter]
-    public string color { get; set; } = "white";
+        [Parameter]
+        public string color { get; set; } = "white";
 
-    [Parameter]
-    public string colorInput { get; set; } = "black";
+        [Parameter]
+        public string colorInput { get; set; } = "black";
 
-    [Parameter]
-    public string colorText { get; set; } = "black";
-    [Parameter]
-    public string tdStyle { get; set; } = "";
+        [Parameter]
+        public string colorText { get; set; } = "black";
+        [Parameter]
+        public string tdStyle { get; set; } = "";
 
-    [Parameter]
-    public EventCallback<object> OnInputChange { get; set; }
+        [Parameter]
+        public EventCallback<object> OnInputChange { get; set; }
 
-    private async Task HandleInputChange(ChangeEventArgs e)
-    {
-        if (tipoDatos[posicion] == "System.Int32")
+        private async Task HandleInputChange(ChangeEventArgs e)
         {
-            if (int.TryParse(e.Value.ToString(), out int valorEntero))
+            if (tipoDatos[posicion] == "System.Int32")
             {
-                fila.GetType().GetProperties()[posicion].SetValue(fila, valorEntero);
+                if (int.TryParse(e.Value.ToString(), out int valorEntero))
+                {
+                    fila.GetType().GetProperties()[posicion].SetValue(fila, valorEntero);
+                    await OnInputChange.InvokeAsync(fila);
+                }
+            }
+            else if (tipoDatos[posicion] == "System.Decimal")
+            {
+                if (decimal.TryParse(e.Value.ToString().Replace('.', ','), out decimal valorDecimal))
+                {
+                    fila.GetType().GetProperties()[posicion].SetValue(fila, valorDecimal);
+                    await OnInputChange.InvokeAsync(fila);
+                }
+            }
+            else if(tipoDatos[posicion] == "System.String")
+            {
+                fila.GetType().GetProperties()[posicion].SetValue(fila, e.Value);
                 await OnInputChange.InvokeAsync(fila);
             }
-        }
-        else if (tipoDatos[posicion] == "System.Decimal")
-        {
-            if (decimal.TryParse(e.Value.ToString().Replace('.', ','), out decimal valorDecimal))
+            else if (tipoDatos[posicion] == "System.Boolean")
             {
-                fila.GetType().GetProperties()[posicion].SetValue(fila, valorDecimal);
+                if (Boolean.TryParse(e.Value.ToString(), out Boolean valorBoolean)){
+
+                    fila.GetType().GetProperties()[posicion].SetValue(fila, valorBoolean);
+                    await OnInputChange.InvokeAsync(fila);
+                }  
+            }
+            else if (tipoDatos[posicion] == "System.DateTime")
+            {
+                fila.GetType().GetProperties()[posicion].SetValue(fila, Convert.ToDateTime(e.Value));
                 await OnInputChange.InvokeAsync(fila);
             }
-        }
-        else if(tipoDatos[posicion] == "System.String")
-        {
-            fila.GetType().GetProperties()[posicion].SetValue(fila, e.Value);
-            await OnInputChange.InvokeAsync(fila);
-        }
-        else if (tipoDatos[posicion] == "System.Boolean")
-        {
-            fila.GetType().GetProperties()[posicion].SetValue(fila, e.Value);
-            await OnInputChange.InvokeAsync(fila);
-        }
 
-    }
+        }
 
     private async Task HandleInputChangeAdd(ChangeEventArgs e)
     {   
-        /*
-        if (tipoDatos[posicion] == "System.Int32")
-        {
-            if (int.TryParse(e.Value.ToString(), out int valorEntero))
-            {
+            /*
+            if (tipoDatos[posicion] == "System.Int32")
+                {
+                if (int.TryParse(e.Value.ToString(), out int valorEntero))
+                {
                 fila.GetType().GetProperties()[posicion].SetValue(fila, valorEntero);
-                await OnInputChange.InvokeAsync(fila);
-            }
+        await OnInputChange.InvokeAsync(fila);
         }
-        else if (tipoDatos[posicion] == "System.Decimal")
-        {
-            if (decimal.TryParse(e.Value.ToString().Replace('.', ','), out decimal valorDecimal))
+        }
+            else if (tipoDatos[posicion] == "System.Decimal")
             {
+            if (decimal.TryParse(e.Value.ToString().Replace('.', ','), out decimal valorDecimal))
+                {
                 fila.GetType().GetProperties()[posicion].SetValue(fila, valorDecimal);
-                await OnInputChange.InvokeAsync(fila);
-            }
+            await OnInputChange.InvokeAsync(fila);
+        }
         }
         else if (tipoDatos[posicion] == "System.String")
-        {
+            {
             fila.GetType().GetProperties()[posicion].SetValue(fila, e.Value);
             await OnInputChange.InvokeAsync(fila);
         }
         else if (tipoDatos[posicion] == "System.Boolean")
-        {
+            {
             fila.GetType().GetProperties()[posicion].SetValue(fila, e.Value);
             await OnInputChange.InvokeAsync(fila);
         }
-        */
+    */
     }
 
 
     //private string valorN;
     protected override void OnParametersSet()
     {
-
     }
 
     private void CambiarValorDePropiedad(object valor)
