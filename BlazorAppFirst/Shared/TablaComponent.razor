@@ -1,4 +1,6 @@
-﻿<div class="tw-border-solid tw-border-2 tw-border-gray-400 tw-rounded-t-lg tw-relative tw-w-auto tw-h-auto tw-mx-auto tw-my-8 tw-bg-white tw-shadow-lg tw-rounded-lg tw-overflow-hidden tw-transform hover:tw-translate-y-2 tw-transition tw-duration-300 tw-ease-in-out tw-flex tw-flex-col tw-justify-center">
+﻿@using System.Reflection
+
+<div class="tw-border-solid tw-border-2 tw-border-gray-400 tw-rounded-t-lg tw-relative tw-w-auto tw-h-auto tw-mx-auto tw-my-8 tw-bg-white tw-shadow-lg tw-rounded-lg tw-overflow-hidden tw-transform hover:tw-translate-y-2 tw-transition tw-duration-300 tw-ease-in-out tw-flex tw-flex-col tw-justify-center">
   <div class="tw-flex-1 tw-overflow-auto">
       @*
         <div class="tw-flex tw-justify-center tw-items-center ">
@@ -11,15 +13,22 @@
         <h1 class="tw-border-b-2 tw-py-8 tw-inline-block tw-flex tw-justify-center tw-items-center tw-text-primary-black tw-font-extrabold tw-text-2xl tw-text-opacity-90 tw-tracking-widest tw-transform tw--rotate-0 tw-transition-transform tw-duration-500 hover:tw-transform hover:tw-translate-y-4 tw-transition tw-duration-300 tw-ease-in-out">@Title</h1>
 
         <div class="tw-md-form tw-mt-0 ">
+            <button class="tw-mb-5 tw-w-auto tw-float-right tw-text-left tw-text-2xl hover:tw-text-primary-blueText tw-mr-10 tw-mt-6" @onclick="() => activarAdd()">
+                    <i class="fa-sharp fa-solid fa-square-plus"></i>
+            </button>
+            
+        </div>   
+
+        <div class="tw-md-form tw-mt-0 ">
             <button class="tw-mb-5 tw-w-auto tw-float-right tw-text-left tw-text-2xl hover:tw-text-primary-blueText tw-mr-10 tw-mt-6" @onclick="() => activarSearch()">
                 <i class="@iconFilter"></i>
             </button>
-        @if (@buscar)
-        {
-                <input class="tw-mt-6 tw-float-right tw-text-left tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-mr-5" @bind-value="@searchTerm" @oninput="HandleSearch" type="text" placeholder="Buscar" aria-label="Buscar" />
-        }
+            @if (@buscar)
+            {
+                <input class="tw-mt-6 tw-float-right tw-text-left tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-mr-5" @bind-value="@addTerm" @oninput="HandleSearch" type="text" placeholder="Buscar" aria-label="Buscar" />
+            }
 
-    </div>
+        </div>
 
 
     @*tw-text-3xl*@
@@ -48,7 +57,21 @@
             </tr>
         </thead>
         <tbody >
-
+            @if(@add){
+                <tr>
+                    <td>
+                        <button @onclick="() => SaveAdd()" class="tw-text-2xl tw-mr-4 tw-text-primary-green"><i class="fa-solid fa-check"></i></button>
+                        <button @onclick="() => CancelAdd()" class="tw-text-2xl tw-text-red-500"><i class="fa-solid fa-x"></i></button>
+                    </td>
+                @for (int indice=0;indice<@nombresDeTipos.Count;indice++)
+                {
+                    <td>
+                         <ColumnaParametrizada tdStyle="@tdStyle" colorText="@colorText" colorInput="@colorInput" posicion="indice" estado="add" tipoDatos="@nombresDeTipos"  />
+                    </td>
+                }
+                </tr>
+            }
+            
             @{var dataset=busqueda?@filteredData:@datos;}
             @foreach (var row in @dataset)
             {
@@ -97,14 +120,15 @@
 
                             @for (int i = 0; i < row.GetType().GetProperties().Length; i++)
                             {
-                        
+
                                 @*
-                                var prop = row.GetType().GetProperties();
-                                @prop.GetValue(i)
-                                if (@row.GetType().GetProperties()[i].GetValue(@row, null) != null)
-                                {
-                                <ColumnaParametrizada estado="@estado" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
-                                }*@
+                                    var prop = row.GetType().GetProperties();
+                                    @prop.GetValue(i)
+                                    if (@row.GetType().GetProperties()[i].GetValue(@row, null) != null)
+                                    {
+                                    <ColumnaParametrizada estado="@estado" row="@row" posicion="@i" tipoDatos="@nombresDeTipos" />
+                                    }
+                                *@
                             //string valor = @row.GetType().GetProperties()[i].GetValue(@row, null).ToString();
                             //<span>@nombresDeTipos[i]</span>
 
@@ -157,10 +181,6 @@
 
     [Parameter]
     [Required]
-    public List<string> headers { get; set; }
-
-    [Parameter]
-    [Required]
     public string Title { get; set; }
 
     [Parameter]
@@ -179,6 +199,8 @@
     public int filaEliminando=-1;
 
     public List<string?> nombresDeTipos = new List<string>();
+    public List<string> headers = new List<string>();
+
 
     [Parameter]
     public string colorDelete  { get; set; } = "#FFBFB1";
@@ -197,12 +219,17 @@
 
     private List<object> filteredData;
     public string searchTerm { get; set; }
+    public string addTerm { get; set; }
+
     public bool busqueda=false;
 
     public bool ver=false;
     public bool buscar = false;
+    public bool add = false;
+
 
     public string iconFilter = "fa-solid fa-filter-circle-xmark";
+    public string iconAdd = "fa-sharp fa-solid fa-square-plus";
     protected override void OnInitialized()
     {
 
@@ -230,14 +257,38 @@
                 }
             }
         }
-        nombresDeTipos = tiposDeDatos.Select(t => t.FullName).ToList();
+        if (headers.Count == 0)
+        {
+            nombresDeTipos = tiposDeDatos.Select(t => t.FullName).ToList();
+            object miFila = datos[0];
+            Type objectType = miFila.GetType();
+            PropertyInfo[] properties = objectType.GetProperties();
+            @foreach (PropertyInfo property in properties)
+            {
+                Console.WriteLine(property.Name.ToString());
+                this.headers.Add(property.Name.ToString());
+            }
+        }
+
     }
 
     private void activarSearch()
     {
-        
+
         this.iconFilter = buscar ? "fa-solid fa-filter" : "fa-solid fa-filter-circle-xmark";
         this.buscar = buscar ? false : true;
+    }
+
+    private void activarAdd()
+    {
+        if (filaEditando > 0)
+        {
+            this.add = false;
+            return;
+        }
+        this.iconAdd = add ? "fa-solid fa-filter" : "fa-sharp fa-solid fa-circle-plus";
+        this.add = add ? false : true;
+        
     }
 
     private void SaveEdit(int index)
@@ -267,6 +318,8 @@
         Console.WriteLine("Editando fila: " + row.ToString());
 
         filaEditando = index;
+
+        add = false;
 
 
     }
@@ -298,6 +351,17 @@
     private void CancelDelete()
     {
         filaEliminando = -1;
+    }
+
+    private void SaveAdd()
+    {
+        this.add = false;
+
+    }
+
+    private void CancelAdd()
+    {
+        this.add = false;
     }
 
 

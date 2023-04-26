@@ -538,10 +538,6 @@ video {
   margin-bottom: 0.5rem;
 }
 
-.tw-mb-20 {
-  margin-bottom: 5rem;
-}
-
 .tw-mb-4 {
   margin-bottom: 1rem;
 }
@@ -570,14 +566,6 @@ video {
   margin-top: 1.5rem;
 }
 
-.tw-mt-3 {
-  margin-top: 0.75rem;
-}
-
-.tw-mt-5 {
-  margin-top: 1.25rem;
-}
-
 .tw-inline-block {
   display: inline-block;
 }
@@ -592,10 +580,6 @@ video {
 
 .tw-h-screen {
   height: 100vh;
-}
-
-.tw-w-1\/5 {
-  width: 20%;
 }
 
 .tw-w-auto {

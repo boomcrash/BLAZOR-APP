@@ -10,7 +10,7 @@
 @*forecasts == null*@
 @if (@headers != null || @registros != null)
 {   <div style="width:100%; margin-bottom:20px;">
-        <TablaComponent Title="@titulo" headers="@headers" datos="@registros" columnValidation="@valdacionesRegex" colorDelete="#FFBFB1" colorEdit="#A5FF8B" colorInput="" colorText="" />
+        <TablaComponent Title="@titulo" datos="@registros" columnValidation="@valdacionesRegex" colorDelete="#FFBFB1" colorEdit="#A5FF8B" colorInput="" colorText="" />
     </div>
 }
 else
@@ -28,7 +28,7 @@ else
         "^[0-9]+$", 
         @"^(https?://)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(\/[^\/]*)*\/([^\/]+\.(jpg|png|gif))$" };
 
-    List<string> headers = new List<string>() { "Id", "Title", "Description", "CategoryId", "Image", "Marca", "Price" };
+    List<string> headers = new List<string>() { "Id", "Title", "Description", "CategoryId", "Image", "Marca", "Price" ,"estado"};
     public List<object> registros=new List<object>();
 
     public string titulo = "TABLA DINAMICA - EJEMPLO";
@@ -37,6 +37,8 @@ else
     {
         for (int i = 1; i <= 30; i++)
         {
+            Random random = new Random();
+            bool estado = random.Next(2) == 0;
             Models.Product2 producto = new Models.Product2
                 {
                     
@@ -47,7 +49,8 @@ else
                     Description = "Este es el producto " + i,
                     CategoryId = i,
                     Image = "image" + i + ".jpg",
-                    Marca = "Marca" + i
+                    Marca = "Marca"+i,
+                    Estado = estado
                 };
 
             registros.Add(producto);

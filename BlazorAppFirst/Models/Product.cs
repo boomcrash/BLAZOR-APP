@@ -21,6 +21,7 @@
         public int? CategoryId { get; set; }
         public string? Image { get; set; }
         public string? Marca { get; set; }
+        public bool? Estado { get; set; }
 
     }
 }

@@ -7,8 +7,15 @@
         @if (@tipoDatos[posicion].ToString() == "System.Decimal")
         {
             <span style="color:@colorText;">@fila.GetType().GetProperties()[posicion].GetValue(@fila, null) </span>
+        }
+        else if (@tipoDatos[posicion].ToString() == "System.Boolean")
+        {
+            <label class="toggle-button">
+                <input type="checkbox" disabled checked="@Convert.ToBoolean(@fila.GetType().GetProperties()[posicion].GetValue(@fila, null))">
+                <span class="slider"></span>
+            </label>
         } 
-         else
+        else
         {
             <span style="color:@colorText;"> @fila.GetType().GetProperties()[posicion].GetValue(@fila, null) </span>
         }
@@ -17,7 +24,6 @@
         <div class="input-field">
         @if (posicion != 0)
         {
-            
             if (@tipoDatos[posicion].ToString() == "System.Int32")
             {
                     <input class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent" style="color:@colorInput; width: 70px;" type="number" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)" onkeydown="return /[0-9]|Backspace|Delete/.test(event.key)" @oninput="HandleInputChange" />
@@ -32,14 +38,54 @@
 
                     <input class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent" style="color:@colorInput;" size="14" type="text" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)" @oninput="HandleInputChange" />
             }
-            else
+            else if (@tipoDatos[posicion].ToString() == "System.Boolean")
             {
+                <label class="toggle-button">
+                        <input type="checkbox" checked=@Convert.ToBoolean(@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)) @onchange="HandleInputChange">
+                <span class="slider"></span>
+            </label>
             }
         }
         else
         {
             <span style="color:@colorText;">@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)</span>
         }
+        </div>
+
+    }else if (@estado == "add")
+    {
+        <div class="input-field">
+            @if (posicion != 0)
+            {
+                
+                if (@tipoDatos[posicion].ToString() == "System.Int32")
+                {
+                    <input class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent" style="color:@colorInput; width: 70px;" type="number"  @oninput="HandleInputChangeAdd" />
+                }
+                else if (@tipoDatos[posicion].ToString() == "System.Decimal")
+                {
+                    <input class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent" style="color:@colorInput; width: 70px;" type="number"  step="any" onkeydown="return /[0-9\,]|Backspace|Delete/.test(event.key)" @oninput="HandleInputChangeAdd" />
+                }
+
+                else if (@tipoDatos[posicion].ToString() == "System.String")
+                {
+
+                    <input class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent" style="color:@colorInput;" size="14" type="text"  @oninput="HandleInputChangeAdd" />
+                }
+                else if (@tipoDatos[posicion].ToString() == "System.Boolean")
+                {
+                    <label class="toggle-button">
+
+                        <input type="checkbox"  @onchange="HandleInputChangeAdd" >
+                        <span class="slider"></span>
+
+                    </label>
+                }
+            }
+            else
+            {
+                <span style="color:@colorText;"></span>
+            }
         </div>
 
     }
@@ -100,7 +146,44 @@
             fila.GetType().GetProperties()[posicion].SetValue(fila, e.Value);
             await OnInputChange.InvokeAsync(fila);
         }
-        
+        else if (tipoDatos[posicion] == "System.Boolean")
+        {
+            fila.GetType().GetProperties()[posicion].SetValue(fila, e.Value);
+            await OnInputChange.InvokeAsync(fila);
+        }
+
+    }
+
+    private async Task HandleInputChangeAdd(ChangeEventArgs e)
+    {   
+        /*
+        if (tipoDatos[posicion] == "System.Int32")
+        {
+            if (int.TryParse(e.Value.ToString(), out int valorEntero))
+            {
+                fila.GetType().GetProperties()[posicion].SetValue(fila, valorEntero);
+                await OnInputChange.InvokeAsync(fila);
+            }
+        }
+        else if (tipoDatos[posicion] == "System.Decimal")
+        {
+            if (decimal.TryParse(e.Value.ToString().Replace('.', ','), out decimal valorDecimal))
+            {
+                fila.GetType().GetProperties()[posicion].SetValue(fila, valorDecimal);
+                await OnInputChange.InvokeAsync(fila);
+            }
+        }
+        else if (tipoDatos[posicion] == "System.String")
+        {
+            fila.GetType().GetProperties()[posicion].SetValue(fila, e.Value);
+            await OnInputChange.InvokeAsync(fila);
+        }
+        else if (tipoDatos[posicion] == "System.Boolean")
+        {
+            fila.GetType().GetProperties()[posicion].SetValue(fila, e.Value);
+            await OnInputChange.InvokeAsync(fila);
+        }
+        */
     }
 
 
@@ -190,3 +273,66 @@
         }
 </style>
 *@
+
+<style>
+    .toggle-button {
+        display: inline-block;
+        position: relative;
+        width: 60px;
+        height: 30px;
+    }
+
+    .toggle-button input[type="checkbox"] {
+        display: none;
+    }
+
+    .toggle-button .slider {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        border-radius: 34px;
+        transition: 0.4s;
+    }
+
+    .toggle-button .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.4s;
+    }
+
+
+
+
+        .toggle-button input[type="checkbox"] + .slider {
+            background-color: red;
+        }
+        .toggle-button input[type="checkbox"]:checked + .slider {
+            background-color: green;
+        }
+
+        .toggle-button input[type="checkbox"]:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-button input[type="checkbox"]:checked + .slider::before {
+                content: "✔";
+                color: green;
+        }
+
+        .toggle-button input[type="checkbox"] + .slider::before {
+            content: "✖";
+            color:red;
+        }
+
+
+
+</style>
