@@ -25,7 +25,7 @@
             </button>
             @if (@buscar)
             {
-                <input class="tw-mt-6 tw-float-right tw-text-left tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-mr-5" @bind-value="@addTerm" @oninput="HandleSearch" type="text" placeholder="Buscar" aria-label="Buscar" />
+                <input class="tw-mt-6 tw-float-right tw-text-left tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-mr-5" @bind-value="@addTerm" @oninput="HandleSearch" type="text" placeholder="Buscar" aria-label="Buscar" />
             }
 
         </div>
@@ -34,53 +34,10 @@
 
     @* VENTANA EMERGENTE - CONFIRMAR ELIMINAR FILA O REGISTRO.*@
 
-        <!-- Botón para eliminar -->
-        <button class="tw-bg-red-500 hover:bg-red-700 tw-text-white tw-font-bold tw-py-2 tw-px-4 tw-rounded"
-                @onclick="() => showConfirmation = true">
-            Eliminar
-        </button>
+      
 
         <!-- Card emergente de confirmación -->
-        <div class="tw-fixed z-10 tw-inset-0 tw-overflow-y-auto" style="display: @(showConfirmation ? "block" : "none")">
-            <div class="tw-flex tw-items-end tw-justify-center tw-min-h-screen tw-pt-4 tw-px-4 tw-pb-20 tw-text-center tw-sm:block tw-sm:p-0">
-                <!-- Fondo semitransparente -->
-                <div class="tw-fixed tw-inset-0 tw-transition-opacity">
-                    <div class="tw-absolute tw-inset-0 tw-bg-gray-500 tw-opacity-75"></div>
-                </div>
-
-                <!-- Card -->
-                <span class="tw-hidden tw-sm:inline-block tw-sm:align-middle tw-sm:h-screen"></span>
-                <div class="tw-inline-block tw-align-bottom tw-bg-white tw-rounded-lg tw-text-left tw-overflow-hidden tw-shadow-xl tw-transform tw-transition-all tw-sm:my-8 tw-sm:align-middle tw-sm:max-w-lg tw-sm:w-full">
-                    <!-- Título -->
-                    <div class="tw-bg-red-500 tw-px-4 tw-py-3">
-                        <h3 class="tw-text-lg tw-leading-6 tw-font-medium tw-text-white">
-                            Confirmar eliminación
-                        </h3>
-                    </div>
-
-                    <!-- Contenido -->
-                    <div class="tw-bg-white tw-px-4 tw-pt-5 tw-pb-4 sm:tw-p-6 sm:tw-pb-4">
-                        <p class="tw-text-sm tw-leading-5">
-                            ¿Estás seguro que deseas eliminar el elemento seleccionado?
-                        </p>
-                    </div>
-
-                    <!-- Botones -->
-                    <div class="tw-bg-gray-50 tw-px-4 tw-py-3 tw-sm:px-6 tw-sm:flex tw-sm:flex-row-reverse">
-                        <span class="tw-flex w-full tw-rounded-md tw-shadow-sm tw-sm:ml-3 tw-sm:w-auto">
-                            <button type="button" class="tw-inline-flex tw-justify-center tw-w-full tw-rounded-md tw-border tw-border-transparent tw-px-4 tw-py-2 tw-bg-red-500 tw-text-base tw-leading-6 tw-font-medium tw-text-white hover:tw-bg-red-600 focus:tw-outline-none focus:tw-border-red-700 focus:tw-shadow-outline-red tw-transition tw-ease-in-out tw-duration-150 tw-sm:text-sm tw-sm:leading-5" @onclick="() => { showConfirmation = false; Eliminar(); }">
-                                Eliminar
-                            </button>
-                        </span>
-                        <span class="tw-mt-3 tw-flex tw-w-full tw-rounded-md tw-shadow-sm sm:tw-mt-0 sm:tw-w-auto">
-                            <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5" @onclick="() => showConfirmation = false">
-                                Cancelar
-                            </button>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
 
 
     @*tw-text-3xl*@
@@ -112,8 +69,8 @@
             @if(@add){
                 <tr>
                     <td>
-                        <button @onclick="() => SaveAdd()" class="tw-text-2xl tw-mr-4 tw-text-primary-green"><i class="fa-solid fa-check"></i></button>
-                        <button @onclick="() => CancelAdd()" class="tw-text-2xl tw-text-red-500"><i class="fa-solid fa-x"></i></button>
+                            <button @onclick="() => SaveAdd()" class=" tw-text-2xl tw-mr-4 tw-text-primary-green  hover:tw-text-4xl"><i class="fa-solid fa-check"></i></button>
+                            <button @onclick="() => CancelAdd()" class="tw-text-2xl tw-text-red-500 hover:tw-text-4xl"><i class="fa-solid fa-x"></i></button>
                     </td>
                 @for (int indice=0;indice<@nombresDeTipos.Count;indice++)
                 {
@@ -151,18 +108,56 @@
                         
                             @if (@index == @filaEditando)
                             {
-                                <button @onclick="() => SaveEdit(index)" class="tw-text-2xl tw-mr-4 tw-text-primary-green"><i class="fa-solid fa-check"></i></button>
-                                <button @onclick="() => CancelEdit()" class="tw-text-2xl tw-text-red-500"><i class="fa-solid fa-x"></i></button>
+                                <button @onclick="() => SaveEdit(index)" class="hover:tw-text-4xl tw-text-2xl tw-mr-4 tw-text-primary-green"><i class="fa-solid fa-check"></i></button>
+                                <button @onclick="() => CancelEdit()" class="hover:tw-text-4xl tw-text-2xl tw-text-red-500"><i class="fa-solid fa-x"></i></button>
                             }
                             else if (@index == @filaEliminando)
                             {
-                                    <button @onclick="() => SaveDelete(index)" class="tw-text-2xl tw-mr-4 tw-text-primary-green "><i class="fa-solid fa-check"></i></button>
-                                <button @onclick="() => CancelDelete()" class="tw-text-2xl tw-text-red-500"><i class="fa-solid fa-x"></i></button>
+                                    <div class="tw-fixed z-10 tw-inset-0 tw-overflow-y-auto" style="display: @(showConfirmation ? "block" : "none")">
+                                        <div class="tw-flex tw-items-end tw-justify-center tw-min-h-screen tw-pt-4 tw-px-4 tw-pb-20 tw-text-center tw-sm:block tw-sm:p-0">
+                                            <!-- Fondo semitransparente -->
+                                            <div class="tw-fixed tw-inset-0 tw-transition-opacity">
+                                                <div class="tw-absolute tw-inset-0 tw-bg-gray-500 tw-opacity-75"></div>
+                                            </div>
+
+                                            <!-- Card -->
+                                            <span class="tw-hidden tw-sm:inline-block tw-sm:align-middle tw-sm:h-screen"></span>
+                                            <div class="tw-inline-block tw-align-bottom tw-bg-white tw-rounded-lg tw-text-left tw-overflow-hidden tw-shadow-xl tw-transform tw-transition-all tw-sm:my-8 tw-sm:align-middle tw-sm:max-w-lg tw-sm:w-full">
+                                                <!-- Título -->
+                                                <div class="tw-bg-red-500 tw-px-4 tw-py-3">
+                                                    <h3 class="tw-text-lg tw-leading-6 tw-font-medium tw-text-white">
+                                                        Confirmar eliminación
+                                                    </h3>
+                                                </div>
+
+                                                <!-- Contenido -->
+                                                <div class="tw-bg-white tw-px-4 tw-pt-5 tw-pb-4 sm:tw-p-6 sm:tw-pb-4">
+                                                    <p class="tw-text-sm tw-leading-5">
+                                                        ¿Estás seguro que deseas eliminar este registro?
+                                                    </p>
+                                                </div>
+
+                                                <!-- Botones -->
+                                                <div class="tw-bg-gray-50 tw-px-4 tw-py-3 tw-sm:px-6 tw-sm:flex tw-sm:flex-row-reverse">
+                                                    <span class="tw-flex w-full tw-rounded-md tw-shadow-sm tw-sm:ml-3 tw-sm:w-auto">
+                                                        <button type="button" class="hover:tw-text-2xl tw-inline-flex tw-justify-center tw-w-full tw-rounded-md tw-border tw-border-transparent tw-px-4 tw-py-2 tw-bg-red-500 tw-text-base tw-leading-6 tw-font-medium tw-text-white hover:tw-bg-red-600 focus:tw-outline-none focus:tw-border-red-700 focus:tw-shadow-outline-red tw-transition tw-ease-in-out tw-duration-150 tw-sm:text-sm tw-sm:leading-5" @onclick="() => {  SaveDelete(index); }">
+                                                            Eliminar
+                                                        </button>
+                                                    </span>
+                                                    <span class="tw-flex w-full tw-rounded-md tw-shadow-sm tw-sm:ml-3 tw-sm:w-auto">
+                                                        <button type="button" class="hover:tw-text-2xl tw-my-6 tw-inline-flex tw-justify-center tw-w-full tw-rounded-md tw-border tw-border-transparent tw-px-4 tw-py-2 tw-bg-gray-300 tw-text-primary-black tw-leading-6 tw-font-medium hover:tw-bg-primary-blueText hover:tw-text-primary-white  focus:tw-outline-none focus:tw-border-red-700 focus:tw-shadow-outline-red tw-transition tw-ease-in-out tw-duration-150 tw-sm:text-sm tw-sm:leading-5" @onclick="() => {  CancelDelete(); }">
+                                                            Cancelar
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                             }
                             else{
 
-                                    <button @onclick="() => EditRow(fila,index)" class="tw-text-2xl tw-mr-4  tw-text-primary-blueText hover:tw-scale-1.7"><i class="fa-solid fa-pencil"></i></button>
-                                    <button @onclick="() => DeleteRow(fila,index)" class="tw-text-2xl tw-text-red-500"><i class="fa-sharp fa-solid fa-trash "></i></button>
+                                    <button @onclick="() => EditRow(fila,index)" class="hover:tw-text-4xl tw-text-2xl tw-mr-4  tw-text-primary-blueText hover:tw-scale-1.7"><i class="fa-solid fa-pencil"></i></button>
+                                    <button @onclick="() => DeleteRow(fila,index)" class="hover:tw-text-4xl tw-text-2xl tw-text-red-500"><i class="fa-sharp fa-solid fa-trash "></i></button>
 
 
                             }
@@ -347,7 +342,7 @@
         }
         this.iconAdd = add ? "fa-solid fa-filter" : "fa-sharp fa-solid fa-circle-plus";
         this.add = add ? false : true;
-        
+
     }
 
     private void SaveEdit(int index)
@@ -393,6 +388,7 @@
         // aquí puedes obtener los datos de la fila y hacer algo con ellos, como confirmar la eliminación
         Console.WriteLine("Eliminando fila: " + row.ToString());
         filaEliminando = index;
+        showConfirmation = true;
     }
 
 
@@ -404,12 +400,14 @@
         // datos.Clear();
         datos.RemoveAt(index);
         filaEliminando = -1;
+        showConfirmation = false;
         // resto del código para eliminar la fila
     }
 
     private void CancelDelete()
     {
         filaEliminando = -1;
+        showConfirmation = false;
     }
 
     private void SaveAdd()

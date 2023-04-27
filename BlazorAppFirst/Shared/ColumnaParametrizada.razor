@@ -12,7 +12,7 @@
         {
             <label class="toggle-button">
                 <input type="checkbox" disabled checked="@Convert.ToBoolean(@fila.GetType().GetProperties()[posicion].GetValue(@fila, null))">
-                <span class="slider"></span>
+                <span class="slider tw-cursor-not-allowed"></span>
             </label>
         } 
         else
@@ -25,7 +25,6 @@
         @if (posicion != 0)
             {
 
-                @tipoDatos[posicion].ToString()
              if (@tipoDatos[posicion].ToString() == "System.Int32")
             {
                     <input class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent" style="color:@colorInput; width: 70px;" type="number" value="@fila.GetType().GetProperties()[posicion].GetValue(@fila, null)" onkeydown="return /[0-9]|Backspace|Delete/.test(event.key)" @oninput="HandleInputChange" />
@@ -49,13 +48,14 @@
             else if (@tipoDatos[posicion].ToString() == "System.DateTime")
             {
                 string formateo = (Convert.ToDateTime(@fila.GetType().GetProperties()[posicion].GetValue(@fila, null))).ToString("yyyy-MM-dd");
-                <input type="date" id="fecha" value="@formateo" @onchange="HandleInputChange">
+                    <div class="tw-relative">
+                        <input  type="date" id="fecha" value="@formateo" @onchange="HandleInputChange" class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent">
+                        <span  class="tw-bg-primary-blueText tw-rounded-r-lg focus:tw-cursor-auto tw-absolute tw-inset-y-0 tw-right-0 tw-flex tw-items-center px-2 tw-pointer-events-none">
+                            <i  class="fa-solid fa-calendar tw-text-white focus:tw-cursor-pointer"></i>
+                        </span>
+                    </div>
             }
-            else if (@tipoDatos[posicion].ToString() == "System.Char")
-            {
-                string formateo = (Convert.ToDateTime(@fila.GetType().GetProperties()[posicion].GetValue(@fila, null))).ToString("yyyy-MM-dd");
-                <input type="date" id="fecha" value="@formateo" @onchange="HandleInputChange">
-            }
+            
         }
         else
         {
@@ -93,6 +93,16 @@
 
                     </label>
                 }
+                else if (@tipoDatos[posicion].ToString() == "System.DateTime")
+                {
+                    <div class="tw-relative " >
+                        <input type="date" id="fecha"  class="tw-border tw-border-primary-blueText tw-p-2 tw-rounded-lg focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent">
+                        <span style="cursor:pointer !important"  class="tw-bg-primary-blueText tw-rounded-r-lg focus:tw-cursor-auto tw-absolute tw-inset-y-0 tw-right-0 tw-flex tw-items-center px-2 tw-pointer-events-none">
+                            <i  class="fa-solid fa-calendar tw-text-white" ></i>
+                        </span>
+                    </div>
+                }
+                
             }
             else
             {
@@ -351,7 +361,6 @@
             content: "✖";
             color:red;
         }
-
 
 
 </style>
