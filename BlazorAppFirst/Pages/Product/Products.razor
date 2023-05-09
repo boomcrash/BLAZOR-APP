@@ -39,6 +39,14 @@ else
     protected override async Task OnInitializedAsync()
     {
         products = await GetProducts();
+        if (products.Count > 0)
+        {
+            Models.Product firstProduct = products[0];
+            Console.WriteLine($"ID: {firstProduct.Id}");
+            Console.WriteLine($"Name: {firstProduct.Title}");
+            Console.WriteLine($"Description: {firstProduct.Description}");
+            Console.WriteLine($"Price: {firstProduct.Price}");
+        }
     }
 
 

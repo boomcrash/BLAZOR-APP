@@ -237,8 +237,6 @@
     [Required]
     public string Title { get; set; }
 
-    [Parameter]
-    [Required]
     public List<object> datos { get; set; }
 
     [Parameter]
@@ -281,12 +279,15 @@
     public bool buscar = false;
     public bool add = false;
 
+    [Parameter]
+    public Func<Task<List<object>>> getData {get; set;}
 
     public string iconFilter = "fa-solid fa-filter-circle-xmark";
     public string iconAdd = "fa-sharp fa-solid fa-square-plus";
-    protected override void OnInitialized()
-    {
 
+    protected override async Task OnInitializedAsync()
+    {
+        this.datos = await getData.Invoke();
     }
 
     protected override void OnParametersSet()

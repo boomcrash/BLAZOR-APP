@@ -1,7 +1,7 @@
 ﻿@page "/fetchdata"
 @inject HttpClient Http
 @inject ILogger<FetchData> logger
-
+@inject IProductService productService
 
 @using BlazorAppFirst.Models
 @using System.Globalization;
@@ -10,7 +10,7 @@
 @*forecasts == null*@
 @if (@headers != null || @registros != null)
 {   <div style="width:100%; margin-bottom:20px;">
-        <TablaComponent Title="@titulo" datos="@registros"  columnValidation="@valdacionesRegex" colorDelete="#FFBFB1" colorEdit="#A5FF8B" colorInput="" colorText="" />
+        <TablaComponent Title="@titulo" getData="@getData"  columnValidation="@valdacionesRegex" colorDelete="#FFBFB1" colorEdit="#A5FF8B" colorInput="" colorText="" />
     </div>
 }
 else
@@ -61,6 +61,15 @@ else
 
             registros.Add(producto);
         }
+    }
+    
+
+    private async Task<List<object>> getData()
+    {
+        List<Models.Product> productos = await productService.Get();
+        List<object> objects = new List<object>(productos.Cast<object>());
+        
+        return objects;
     }
 
     
